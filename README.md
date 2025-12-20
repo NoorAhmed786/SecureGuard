@@ -41,13 +41,13 @@ The project follows a **Layered Clean Architecture** inspired by Hexagonal (Port
 - **Docker**: Optional (for containerized deployment)
 
 ### 2. Backend Setup
-```bash
-cd backend
-python -m venv venv
-source venv/Scripts/activate  # venv\Scripts\activate on Windows
-pip install -r requirements.txt
-# Configure your .env with STRIPE_SECRET_KEY, JWT_SECRET, etc.
-uvicorn backend.app.main:app --reload --port 8000
+From the **root directory**:
+```powershell
+# Install dependencies
+pip install -r backend/requirements.txt
+
+# Run the backend (Windows compatible)
+python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
 ### 3. Frontend Setup
