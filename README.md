@@ -41,7 +41,9 @@ The project follows a **Layered Clean Architecture** inspired by Hexagonal (Port
 - **Docker**: Optional (for containerized deployment)
 
 ### 2. Backend Setup
-From the **root directory**:
+> [!IMPORTANT]
+> You **must** run these commands from the **root directory** (`d:\saas-app`), NOT inside the `backend` folder. Otherwise, you will get a "ModuleNotFoundError".
+
 ```powershell
 # Install dependencies
 pip install -r backend/requirements.txt
