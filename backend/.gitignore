@@ -1,0 +1,7 @@
+# Ignore the .env file which contains sensitive data
+.env
+
+# Ignore other sensitive files (adjust as needed)
+secrets.json
+*.key
+*.pem

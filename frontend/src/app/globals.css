@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+  }
+}
+
+html, body {
+  @apply bg-slate-950 text-slate-100;
+  margin: 0;
+  padding: 0;
+}

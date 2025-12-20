@@ -1,0 +1,46 @@
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import select, func
+from sqlalchemy.ext.asyncio import AsyncSession
+from backend.app.infrastructure.database.setup import get_db
+from backend.app.infrastructure.database.models import IncidentModel, UserModel
+from typing import Dict, Any
+
+from backend.app.domain.entities.phishing import IncidentStatus, ThreatLevel
+
+router = APIRouter(prefix="/api/v1/dashboard", tags=["dashboard"])
+
+@router.get("/stats")
+async def get_dashboard_stats(db: AsyncSession = Depends(get_db)):
+    # 1. Total Scans (Incidents)
+    total_scans_result = await db.execute(select(func.count(IncidentModel.id)))
+    total_scans = total_scans_result.scalar() or 0
+
+    # 2. Threats Detected (High or Critical)
+    threats_result = await db.execute(
+        select(func.count(IncidentModel.id)).where(IncidentModel.threat_level.in_([ThreatLevel.HIGH, ThreatLevel.CRITICAL]))
+    )
+    threats_detected = threats_result.scalar() or 0
+
+    # 3. Recent Alerts
+    alerts_result = await db.execute(
+        select(IncidentModel).order_by(IncidentModel.detected_at.desc()).limit(5)
+    )
+    recent_incidents = alerts_result.scalars().all()
+    
+    alerts = []
+    for inc in recent_incidents:
+        alerts.append({
+            "id": inc.id,
+            "title": f"Phishing Attempt: {inc.sender_email[:20]}...",
+            "level": inc.threat_level.value.capitalize(),
+            "time": inc.detected_at.isoformat(),
+            "detail": inc.subject
+        })
+
+    return {
+        "total_scans": total_scans,
+        "threats_detected": threats_detected,
+        "training_progress": 65,
+        "security_score": 85,
+        "alerts": alerts
+    }
