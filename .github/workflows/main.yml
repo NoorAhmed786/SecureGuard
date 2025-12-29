@@ -43,7 +43,7 @@ jobs:
           cd frontend
           npm run lint
 
-  build-and-push:
+  build-images:
     needs: [test-backend, test-frontend]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -51,14 +51,24 @@ jobs:
       - uses: actions/checkout@v4
       
       - name: Set up Docker Buildx
-        uses: actions/setup-experimental-buildx@v1
+        uses: docker/setup-buildx-action@v3
 
       - name: Build Backend Image
-        run: |
-          docker build -t secureguard-backend ./backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: false
+          tags: secureguard-backend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Build Frontend Image
-        run: |
-          docker build -t secureguard-frontend ./frontend
-          
-      # Add Push steps here once a container registry is configured
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          build-args: |
+             NEXT_PUBLIC_API_URL=http://localhost:8000
+          push: false
+          tags: secureguard-frontend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
