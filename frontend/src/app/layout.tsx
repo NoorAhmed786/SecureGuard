@@ -22,7 +22,7 @@ export default function RootLayout({
     const token = localStorage.getItem('token');
     if (token) {
       try {
-        const decoded: any = jwtDecode(token);
+        const decoded = jwtDecode(token) as { exp?: number; role?: 'admin' | 'user'; sub?: string };
 
         // Check if token is expired
         const currentTime = Date.now() / 1000;

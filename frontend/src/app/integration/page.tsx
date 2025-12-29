@@ -28,7 +28,7 @@ export default function IntegrationPage() {
 
     const fetchAPIKeys = async () => {
         try {
-            const data: any = await apiRequest('/api/v1/api-keys/list');
+            const data = await apiRequest('/api/v1/api-keys/list') as APIKey[];
             setApiKeys(data);
         } catch (error) {
             console.error('Failed to fetch API keys:', error);
@@ -41,10 +41,10 @@ export default function IntegrationPage() {
         if (!newKeyName) return;
 
         try {
-            const newKey: any = await apiRequest('/api/v1/api-keys/generate', {
+            const newKey = await apiRequest('/api/v1/api-keys/generate', {
                 method: 'POST',
                 body: JSON.stringify({ name: newKeyName })
-            });
+            }) as APIKey;
             setApiKeys([newKey, ...apiKeys]);
             setNewKeyName('');
             setShowNewKeyDialog(false);
@@ -236,7 +236,7 @@ export default function IntegrationPage() {
                             </div>
 
                             <div>
-                                <h3 className="text-white font-semibold mb-3">Step 2: That's It!</h3>
+                                <h3 className="text-white font-semibold mb-3">Step 2: That&apos;s It!</h3>
                                 <p className="text-slate-400">
                                     The widget will automatically monitor all links on your website and warn users before they click on potentially dangerous URLs.
                                 </p>

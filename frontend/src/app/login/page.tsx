@@ -24,13 +24,13 @@ export default function LoginPage() {
                 formData.append('username', email);
                 formData.append('password', password);
 
-                const data: any = await loginRequest(formData);
+                const data = await loginRequest(formData) as { access_token: string };
                 localStorage.setItem('token', data.access_token);
 
                 // Decode role for redirection
                 try {
-                    const { jwtDecode }: any = await import('jwt-decode');
-                    const decoded: any = jwtDecode(data.access_token);
+                    const { jwtDecode }: any = await import('jwt-decode'); // dynamic import restricted from being typed easily here
+                    const decoded = jwtDecode(data.access_token) as { role?: string };
                     const role = decoded.role || 'user';
 
                     // Clear fields before redirect
@@ -67,9 +67,10 @@ export default function LoginPage() {
                 setFullName('');
                 setIsLogin(true);
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Auth Error:", error);
-            alert(error.message || "An authentication error occurred.");
+            const message = error instanceof Error ? error.message : "An authentication error occurred.";
+            alert(message);
         } finally {
             setIsLoading(false);
         }
