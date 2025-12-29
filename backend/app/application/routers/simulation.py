@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from backend.app.infrastructure.database.setup import get_db
-from backend.app.infrastructure.database.models import IncidentModel, UserModel
-from backend.app.domain.entities.phishing import IncidentStatus, ThreatLevel
+from app.infrastructure.database.setup import get_db
+from app.infrastructure.database.models import IncidentModel, UserModel
+from app.domain.entities.phishing import IncidentStatus, ThreatLevel
 from datetime import datetime, timezone
 import uuid
 

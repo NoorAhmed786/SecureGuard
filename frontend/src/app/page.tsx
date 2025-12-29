@@ -69,7 +69,7 @@ export default function Home() {
               transition={{ delay: 0.4, duration: 0.8 }}
               className="text-base md:text-lg text-slate-400 max-w-xl mx-auto leading-relaxed"
             >
-              Enterprise-grade security simplified. SecureGuard AI provides real-time phishing defense, automated website scanning, and interactive training.
+              Enterprise-grade security simplified. SecureGuard AI provides real-time phishing defense, advanced security scanning, and interactive training.
             </motion.p>
 
             <motion.div

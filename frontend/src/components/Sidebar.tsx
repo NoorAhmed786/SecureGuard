@@ -29,15 +29,14 @@ export default function Sidebar({ role, userEmail }: SidebarProps) {
     const [isCollapsed, setIsCollapsed] = useState(false);
 
     const navItems = [
-        { name: 'Home', icon: LayoutDashboard, href: '/dashboard', roles: ['user', 'admin'] },
+        { name: 'Dashboard', icon: LayoutDashboard, href: '/dashboard', roles: ['user', 'admin'] },
+        { name: 'Security Scanner', icon: Search, href: '/scanner', roles: ['user', 'admin'] },
         { name: 'Phishing Alerts', icon: ShieldAlert, href: '/alerts', roles: ['user', 'admin'] },
-        { name: 'Email Scanner', icon: Search, href: '/scanner', roles: ['user', 'admin'] },
-        { name: 'Website Scanner', icon: Globe, href: '/website-scanner', roles: ['user', 'admin'] },
-        { name: 'Integration', icon: Code, href: '/integration', roles: ['user', 'admin'] },
-        { name: 'Training', icon: GraduationCap, href: '/training', roles: ['user', 'admin'] },
-        { name: 'Subscription', icon: CreditCard, href: '/pricing', roles: ['user'] },
-        { name: 'Admin Panel', icon: Users, href: '/admin/dashboard', roles: ['admin'] },
-        { name: 'Settings', icon: Settings, href: '/settings', roles: ['user', 'admin'] },
+        { name: 'Security Training', icon: GraduationCap, href: '/training', roles: ['user', 'admin'] },
+        { name: 'Widget Integration', icon: Code, href: '/integration', roles: ['user', 'admin'] },
+        { name: 'Subscription Plan', icon: CreditCard, href: '/pricing', roles: ['user'] },
+        { name: 'Admin Dashboard', icon: Users, href: '/admin/dashboard', roles: ['admin'] },
+        { name: 'System Settings', icon: Settings, href: '/settings', roles: ['user', 'admin'] },
     ];
 
     const handleLogout = () => {

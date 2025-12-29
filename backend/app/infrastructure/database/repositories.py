@@ -1,9 +1,9 @@
 from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from backend.app.domain.entities.phishing import PhishingIncident
-from backend.app.domain.interfaces.repositories import IIncidentRepository
-from backend.app.infrastructure.database.models import IncidentModel
+from app.domain.entities.phishing import PhishingIncident
+from app.domain.interfaces.repositories import IIncidentRepository
+from app.infrastructure.database.models import IncidentModel
 
 class SQLAlchemyIncidentRepository(IIncidentRepository):
     def __init__(self, session: AsyncSession):

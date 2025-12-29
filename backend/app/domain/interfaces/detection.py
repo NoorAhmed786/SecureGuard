@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Dict, Any, List
-from backend.app.domain.entities.phishing import PhishingIncident
+from app.domain.entities.phishing import PhishingIncident
 
 class IThreatIntelProvider(ABC):
     """

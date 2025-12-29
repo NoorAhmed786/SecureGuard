@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from backend.app.infrastructure.database.models import UserModel as User
-from backend.app.core.security import get_password_hash
+from app.infrastructure.database.models import UserModel as User
+from app.core.security import get_password_hash
 from pydantic import BaseModel
 import uuid
 

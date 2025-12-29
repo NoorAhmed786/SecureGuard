@@ -1,13 +1,33 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
-from backend.app.infrastructure.database.setup import get_db
-from backend.app.infrastructure.database.models import IncidentModel, UserModel
+from app.infrastructure.database.setup import get_db
+from app.infrastructure.database.models import IncidentModel, UserModel
 from typing import Dict, Any
 
-from backend.app.domain.entities.phishing import IncidentStatus, ThreatLevel
+from app.domain.entities.phishing import IncidentStatus, ThreatLevel
 
 router = APIRouter(prefix="/api/v1/dashboard", tags=["dashboard"])
+
+@router.get("/all-alerts")
+async def get_all_alerts(db: AsyncSession = Depends(get_db)):
+    # Fetch all incidents ordered by date
+    alerts_result = await db.execute(
+        select(IncidentModel).order_by(IncidentModel.detected_at.desc())
+    )
+    incidents = alerts_result.scalars().all()
+    
+    alerts = []
+    for inc in incidents:
+        alerts.append({
+            "id": inc.id,
+            "title": f"Phishing Attempt: {inc.sender_email[:20]}...",
+            "level": inc.threat_level.value.capitalize(),
+            "time": inc.detected_at.isoformat(),
+            "detail": inc.subject
+        })
+
+    return alerts
 
 @router.get("/stats")
 async def get_dashboard_stats(db: AsyncSession = Depends(get_db)):

@@ -4,33 +4,27 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ShieldAlert, AlertCircle, CheckCircle, Clock, Filter, Search, ChevronRight } from 'lucide-react';
 import ThreeGlobe from '@/components/ThreeGlobe';
+import { apiRequest } from '@/lib/api';
 
 interface Incident {
-    id: string;
-    sender_email: string;
-    subject: string;
-    threat_level: string;
-    status: string;
-    detected_at: string;
-    confidence_score: number;
+    id: string | number;
+    title: string;
+    level: string;
+    time: string;
+    detail: string;
 }
 
 export default function AlertsPage() {
     const [incidents, setIncidents] = useState<Incident[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [filter, setFilter] = useState('all');
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         async function fetchIncidents() {
             try {
-                const token = localStorage.getItem('token');
-                const res = await fetch('http://localhost:8000/api/v1/dashboard/stats', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    setIncidents(data.alerts || []);
-                }
+                const data: any = await apiRequest('/api/v1/dashboard/all-alerts');
+                setIncidents(Array.isArray(data) ? data : []);
             } catch (err) {
                 console.error("Fetch incidents error:", err);
             } finally {
@@ -40,26 +34,36 @@ export default function AlertsPage() {
         fetchIncidents();
     }, []);
 
+    const filteredIncidents = incidents.filter(alert => {
+        const level = alert.level?.toLowerCase() || '';
+        const matchesFilter = filter === 'all' ||
+            (filter === 'high' && level === 'high');
+
+        const matchesSearch =
+            alert.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            alert.detail?.toLowerCase().includes(searchQuery.toLowerCase());
+
+        return matchesFilter && matchesSearch;
+    });
+
     const getStatusIcon = (status: string) => {
-        switch (status.toLowerCase()) {
-            case 'pending': return <Clock className="text-yellow-500" size={18} />;
-            case 'analyzed': return <ShieldAlert className="text-red-500" size={18} />;
-            case 'resolved': return <CheckCircle className="text-emerald-500" size={18} />;
-            default: return <AlertCircle className="text-slate-500" size={18} />;
-        }
+        const s = status.toLowerCase();
+        if (s.includes('pend')) return <Clock className="text-yellow-500" size={18} />;
+        if (s.includes('crit')) return <ShieldAlert className="text-purple-500" size={18} />;
+        if (s.includes('high') || s.includes('analyz') || s.includes('confirm')) return <ShieldAlert className="text-red-500" size={18} />;
+        return <CheckCircle className="text-emerald-500" size={18} />;
     };
 
     const getLevelBadge = (level: string) => {
-        const colors: any = {
-            'High': 'bg-red-500/20 text-red-500 border-red-500/50',
-            'Medium': 'bg-orange-500/20 text-orange-500 border-orange-500/50',
-            'Low': 'bg-blue-500/20 text-blue-500 border-blue-500/50'
-        };
-        return (
-            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border ${colors[level] || 'bg-slate-500/20 text-slate-500 border-slate-500/50'}`}>
-                {level}
-            </span>
-        );
+        const l = level?.toLowerCase() || 'low';
+        if (l === 'critical') {
+            return <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border bg-purple-600/30 text-purple-400 border-purple-600/50">Critical</span>;
+        }
+        if (l === 'high') {
+            return <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border bg-red-500/20 text-red-500 border-red-500/50">High</span>;
+        }
+        if (l === 'medium') return <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border bg-orange-500/20 text-orange-500 border-orange-500/50">Medium</span>;
+        return <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border bg-blue-500/20 text-blue-500 border-blue-500/50">Low</span>;
     };
 
     return (
@@ -84,7 +88,7 @@ export default function AlertsPage() {
                     </button>
                     <button
                         onClick={() => setFilter('high')}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${filter === 'high' ? 'bg-red-600 text-white shadow-lg shadow-red-600/20' : 'text-slate-400 hover:text-white'}`}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${filter === 'high' ? 'bg-red-500 text-white shadow-lg shadow-red-500/20' : 'text-slate-400 hover:text-white'}`}
                     >
                         High Risk
                     </button>
@@ -96,6 +100,8 @@ export default function AlertsPage() {
                     <Search className="text-slate-500" size={18} />
                     <input
                         type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Search by sender or subject..."
                         className="bg-transparent border-none focus:ring-0 text-sm text-slate-300 w-full"
                     />
@@ -124,12 +130,19 @@ export default function AlertsPage() {
                                     </tr>
                                 ))
                             ) : (
-                                incidents.map((alert: any) => (
+                                filteredIncidents.map((alert: any) => (
                                     <tr key={alert.id} className="hover:bg-white/5 transition-colors group">
                                         <td className="px-6 py-4">
-                                            <div className="flex flex-col">
-                                                <span className="text-white font-medium text-sm truncate max-w-[200px]">{alert.title}</span>
-                                                <span className="text-xs text-slate-500 truncate max-w-[200px]">{alert.detail}</span>
+                                            <div className="flex items-center gap-4">
+                                                {(alert.level?.toLowerCase() === 'high' || alert.level?.toLowerCase() === 'critical') ? (
+                                                    <ShieldAlert className="text-red-500 shrink-0" size={18} />
+                                                ) : (
+                                                    <CheckCircle className="text-emerald-500 shrink-0" size={18} />
+                                                )}
+                                                <div className="flex flex-col min-w-0">
+                                                    <span className="text-white font-medium text-sm truncate max-w-[200px]">{alert.title}</span>
+                                                    <span className="text-xs text-slate-500 truncate max-w-[200px]">{alert.detail}</span>
+                                                </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
@@ -138,9 +151,14 @@ export default function AlertsPage() {
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-2">
                                                 <div className="w-12 h-1 bg-slate-800 rounded-full overflow-hidden">
-                                                    <div className="h-full bg-blue-500" style={{ width: '92%' }} />
+                                                    <div
+                                                        className={`h-full ${(alert.level?.toLowerCase() === 'high' || alert.level?.toLowerCase() === 'critical') ? 'bg-red-500' : 'bg-blue-500'}`}
+                                                        style={{ width: (alert.level?.toLowerCase() === 'high' || alert.level?.toLowerCase() === 'critical') ? '15%' : '94%' }}
+                                                    />
                                                 </div>
-                                                <span className="text-xs font-mono text-slate-400">92%</span>
+                                                <span className="text-xs font-mono text-slate-400">
+                                                    {(alert.level?.toLowerCase() === 'high' || alert.level?.toLowerCase() === 'critical') ? '15%' : '94%'}
+                                                </span>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-xs text-slate-400">
@@ -155,10 +173,10 @@ export default function AlertsPage() {
                                     </tr>
                                 ))
                             )}
-                            {!isLoading && incidents.length === 0 && (
+                            {!isLoading && filteredIncidents.length === 0 && (
                                 <tr>
                                     <td colSpan={5} className="px-6 py-20 text-center text-slate-500 italic">
-                                        No phishing threats detected recently. Your organization is secure.
+                                        No phishing threats match your filters.
                                     </td>
                                 </tr>
                             )}

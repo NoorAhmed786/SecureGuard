@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ShieldAlert, Activity, GraduationCap, TrendingUp, AlertTriangle, CheckCircle } from 'lucide-react';
 import ThreeGlobe from '@/components/ThreeGlobe';
+import { apiRequest } from '@/lib/api';
 
 interface Alert {
     id: string | number;
@@ -32,14 +33,8 @@ export default function Dashboard() {
     useEffect(() => {
         async function fetchStats() {
             try {
-                const token = localStorage.getItem('token');
-                const res = await fetch('http://localhost:8000/api/v1/dashboard/stats', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                if (res.ok) {
-                    const stats = await res.json();
-                    setData(stats);
-                }
+                const stats: any = await apiRequest('/api/v1/dashboard/stats');
+                setData(stats);
             } catch (err) {
                 console.error("Dashboard Fetch Error:", err);
             } finally {
@@ -47,6 +42,43 @@ export default function Dashboard() {
             }
         }
         fetchStats();
+
+        // Establish WebSocket connection for real-time alerts
+        const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const wsProtocol = apiBase.startsWith('https') ? 'wss:' : 'ws:';
+
+        // Use the same hostname used to access the page for local connections
+        // This ensures localhost vs 127.0.0.1 consistency
+        const isLocal = apiBase.includes('localhost') || apiBase.includes('127.0.0.1');
+        const wsHostName = isLocal ? window.location.hostname : apiBase.replace(/^https?:\/\//, '').split(':')[0];
+        const wsPort = apiBase.split(':').pop() || '8000';
+
+        const wsUrl = `${wsProtocol}//${wsHostName}:${wsPort}/ws/alerts`;
+        console.log("Connecting to WebSocket:", wsUrl);
+        const socket = new WebSocket(wsUrl);
+
+        socket.onmessage = (event) => {
+            try {
+                const newAlert = JSON.parse(event.data);
+                if (newAlert.type === 'phishing_alert') {
+                    setData(prev => ({
+                        ...prev,
+                        threats_detected: prev.threats_detected + 1,
+                        alerts: [newAlert, ...prev.alerts].slice(0, 10) // Keep latest 10
+                    }));
+                }
+            } catch (err) {
+                console.error("WebSocket message error:", err);
+            }
+        };
+
+        socket.onerror = (err) => {
+            console.error("WebSocket error:", err);
+        };
+
+        return () => {
+            socket.close();
+        };
     }, []);
 
     const stats = [

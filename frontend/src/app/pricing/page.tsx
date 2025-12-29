@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Check, Shield, Zap, Target, Loader2 } from 'lucide-react';
 import CheckoutButton from '@/components/CheckoutButton';
+import { apiRequest } from '@/lib/api';
 
 export default function PricingPage() {
     const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
@@ -62,18 +63,11 @@ export default function PricingPage() {
 
         setLoadingPlan(planId);
         try {
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-            const response = await fetch(`${apiBase}/api/v1/payment/create-checkout-session?plan_id=${planId}`, {
+            const data: any = await apiRequest(`/api/v1/payment/create-checkout-session`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                params: { plan_id: planId }
             });
 
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.detail || `Server responded with ${response.status}`);
-            }
-
-            const data = await response.json();
             if (data.checkout_url) {
                 window.location.href = data.checkout_url;
             } else {

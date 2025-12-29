@@ -2,17 +2,24 @@ import stripe
 import os
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
-from backend.app.infrastructure.database.setup import get_db
-from backend.app.infrastructure.database.models import UserModel
+from app.infrastructure.database.setup import get_db
+from app.infrastructure.database.models import UserModel
 from typing import Dict, Any
 
 # Ensure Stripe API key is loaded
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY", "sk_test_mock")
 
+from app.application.dependencies import get_payment_gateway
+from app.infrastructure.payment.stripe_adapter import StripeAdapter
+
 router = APIRouter(prefix="/api/v1/payment", tags=["payment"])
 
 @router.post("/create-checkout-session")
-async def create_checkout_session(plan_id: str, db: AsyncSession = Depends(get_db)):
+async def create_checkout_session(
+    plan_id: str, 
+    db: AsyncSession = Depends(get_db),
+    payment_gateway: StripeAdapter = Depends(get_payment_gateway)
+):
     # Debug: Log incoming request
     print(f"\n=== CHECKOUT SESSION REQUEST ===")
     print(f"Requested plan_id: '{plan_id}'")
@@ -33,8 +40,6 @@ async def create_checkout_session(plan_id: str, db: AsyncSession = Depends(get_d
         raise HTTPException(status_code=400, detail=f"Invalid plan ID: {plan_id}")
 
     try:
-        from backend.app.main import payment_gateway
-        
         # Hardcoded for local dev, should come from config/env in production
         success_url = "http://localhost:3000/dashboard?session_id={CHECKOUT_SESSION_ID}"
         cancel_url = "http://localhost:3000/pricing"

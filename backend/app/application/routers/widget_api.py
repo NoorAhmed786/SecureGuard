@@ -6,10 +6,10 @@ Allows real-time URL checking from client websites
 from fastapi import APIRouter, Depends, HTTPException, Header
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
-from backend.app.infrastructure.database.setup import get_db
-from backend.app.infrastructure.database.models import APIKeyModel, WidgetEventModel
-from backend.app.infrastructure.threat_intel.google_safe_browsing import GoogleSafeBrowsingProvider
-from backend.app.infrastructure.ai.classifier import classifier
+from app.infrastructure.database.setup import get_db
+from app.infrastructure.database.models import APIKeyModel, WidgetEventModel
+from app.infrastructure.threat_intel.google_safe_browsing import GoogleSafeBrowsingProvider
+from app.infrastructure.ai.classifier import classifier
 from datetime import datetime
 import uuid
 

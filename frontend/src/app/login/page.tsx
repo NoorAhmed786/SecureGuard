@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { loginRequest, apiRequest } from '@/lib/api';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
@@ -23,69 +24,52 @@ export default function LoginPage() {
                 formData.append('username', email);
                 formData.append('password', password);
 
-                const res = await fetch('http://localhost:8000/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: formData,
-                });
+                const data: any = await loginRequest(formData);
+                localStorage.setItem('token', data.access_token);
 
-                if (res.ok) {
-                    const data = await res.json();
-                    localStorage.setItem('token', data.access_token);
+                // Decode role for redirection
+                try {
+                    const { jwtDecode }: any = await import('jwt-decode');
+                    const decoded: any = jwtDecode(data.access_token);
+                    const role = decoded.role || 'user';
 
-                    // Decode role for redirection
-                    try {
-                        const { jwtDecode }: any = await import('jwt-decode');
-                        const decoded: any = jwtDecode(data.access_token);
-                        const role = decoded.role || 'user';
+                    // Clear fields before redirect
+                    setEmail('');
+                    setPassword('');
 
-                        // Clear fields before redirect
-                        setEmail('');
-                        setPassword('');
+                    // Role-based redirect
+                    const searchParams = new URLSearchParams(window.location.search);
+                    const redirectPath = searchParams.get('redirect');
 
-                        // Role-based redirect
-                        const searchParams = new URLSearchParams(window.location.search);
-                        const redirectPath = searchParams.get('redirect');
-
-                        if (redirectPath) {
-                            window.location.href = redirectPath;
-                        } else if (role === 'admin') {
-                            window.location.href = '/admin/dashboard';
-                        } else {
-                            window.location.href = '/dashboard';
-                        }
-                    } catch (e) {
-                        const searchParams = new URLSearchParams(window.location.search);
-                        const redirectPath = searchParams.get('redirect');
-                        window.location.href = redirectPath || '/dashboard';
+                    if (redirectPath) {
+                        window.location.href = redirectPath;
+                    } else if (role === 'admin') {
+                        window.location.href = '/admin/dashboard';
+                    } else {
+                        window.location.href = '/dashboard';
                     }
-                } else {
-                    const error = await res.json();
-                    alert(`Login Failed: ${error.detail}`);
+                } catch (e) {
+                    const searchParams = new URLSearchParams(window.location.search);
+                    const redirectPath = searchParams.get('redirect');
+                    window.location.href = redirectPath || '/dashboard';
                 }
             } else {
                 // Register Logic
-                const res = await fetch('http://localhost:8000/auth/register', {
+                await apiRequest('/auth/register', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password, full_name: fullName }),
                 });
 
-                if (res.ok) {
-                    alert('Registration successful! Please login.');
-                    // Clear fields
-                    setEmail('');
-                    setPassword('');
-                    setFullName('');
-                    setIsLogin(true);
-                } else {
-                    const error = await res.json();
-                    alert(`Registration Failed: ${error.detail}`);
-                }
+                alert('Registration successful! Please login.');
+                // Clear fields
+                setEmail('');
+                setPassword('');
+                setFullName('');
+                setIsLogin(true);
             }
-        } catch (error) {
-            console.error("Fetch Error:", error);
-            alert(`Network Error: Cannot reach the backend. Is it running at http://localhost:8000?`);
+        } catch (error: any) {
+            console.error("Auth Error:", error);
+            alert(error.message || "An authentication error occurred.");
         } finally {
             setIsLoading(false);
         }

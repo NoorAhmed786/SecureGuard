@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, X, Send, Bot, User, Loader2, Sparkles } from 'lucide-react';
+import { apiRequest } from '@/lib/api';
 
 export default function AIAssistant() {
     const [isOpen, setIsOpen] = useState(false);
@@ -28,12 +29,10 @@ export default function AIAssistant() {
         setIsLoading(true);
 
         try {
-            const res = await fetch('http://localhost:8000/api/v1/rag/ask', {
+            const data: any = await apiRequest('/api/v1/rag/ask', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ user_id: 'guest', query: userMsg })
             });
-            const data = await res.json();
             setMessages(prev => [...prev, { role: 'bot', content: data.answer }]);
         } catch (err) {
             setMessages(prev => [...prev, { role: 'bot', content: "I'm having trouble connecting to my brain right now. Please try again later!" }]);

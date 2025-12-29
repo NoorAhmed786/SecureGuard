@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List
-from backend.app.domain.entities.rag import KnowledgeBaseDocument
-from backend.app.domain.interfaces.rag import IVectorStore
+from app.domain.entities.rag import KnowledgeBaseDocument
+from app.domain.interfaces.rag import IVectorStore
 
 class SimpleVectorStore(IVectorStore):
     """

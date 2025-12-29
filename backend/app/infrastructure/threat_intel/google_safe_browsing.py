@@ -1,5 +1,5 @@
 from typing import Dict, Any
-from backend.app.domain.interfaces.detection import IThreatIntelProvider
+from app.domain.interfaces.detection import IThreatIntelProvider
 
 class GoogleSafeBrowsingProvider(IThreatIntelProvider):
     """
@@ -11,9 +11,10 @@ class GoogleSafeBrowsingProvider(IThreatIntelProvider):
 
     async def check_url(self, url: str) -> Dict[str, Any]:
         # TODO: Implement actual API call using httpx
-        # For prototype/mock:
-        if "malicious" in url:
-            return {"safe": False, "threat_type": "MALWARE", "provider": "GoogleSB"}
+        # For prototype/mock detection of common phishy patterns
+        phishy_keywords = ["malicious", "secure-login", "bank-verify", "account-update", "phish", "danger"]
+        if any(keyword in url.lower() for keyword in phishy_keywords):
+            return {"safe": False, "threat_type": "SOCIAL_ENGINEERING", "provider": "GoogleSB"}
         return {"safe": True, "provider": "GoogleSB"}
 
     async def check_file_hash(self, file_hash: str) -> Dict[str, Any]:

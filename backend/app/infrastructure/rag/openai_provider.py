@@ -1,6 +1,6 @@
 from typing import List
-from backend.app.domain.entities.rag import KnowledgeBaseDocument
-from backend.app.domain.interfaces.rag import ILLMProvider
+from app.domain.entities.rag import KnowledgeBaseDocument
+from app.domain.interfaces.rag import ILLMProvider
 
 class OpenAILLMProvider(ILLMProvider):
     def __init__(self, api_key: str):

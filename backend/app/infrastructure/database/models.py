@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Float, DateTime, JSON, Enum as SQLEnum, Boolean, Integer
-from backend.app.infrastructure.database.setup import Base
-from backend.app.domain.entities.phishing import IncidentStatus, ThreatLevel
+from app.infrastructure.database.setup import Base
+from app.domain.entities.phishing import IncidentStatus, ThreatLevel
 from datetime import datetime
 import datetime as dt_module
 import secrets

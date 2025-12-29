@@ -5,9 +5,9 @@ Allows users to generate and manage API keys for widget integration
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
-from backend.app.infrastructure.database.setup import get_db
-from backend.app.infrastructure.database.models import APIKeyModel
-from backend.app.core.security import get_current_user
+from app.infrastructure.database.setup import get_db
+from app.infrastructure.database.models import APIKeyModel
+from app.core.security import get_current_user
 import uuid
 import secrets
 

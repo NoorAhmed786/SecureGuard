@@ -1,5 +1,5 @@
 from typing import Dict, Any
-from backend.app.domain.interfaces.detection import IThreatIntelProvider
+from app.domain.interfaces.detection import IThreatIntelProvider
 
 class VirusTotalProvider(IThreatIntelProvider):
     """

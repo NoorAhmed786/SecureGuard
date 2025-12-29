@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Key, Code, Copy, CheckCircle, Plus, Trash2, Eye, EyeOff } from 'lucide-react';
+import { apiRequest } from '@/lib/api';
 
 interface APIKey {
     id: string;
@@ -27,11 +28,7 @@ export default function IntegrationPage() {
 
     const fetchAPIKeys = async () => {
         try {
-            const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:8000/api/v1/api-keys/list', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const data = await response.json();
+            const data: any = await apiRequest('/api/v1/api-keys/list');
             setApiKeys(data);
         } catch (error) {
             console.error('Failed to fetch API keys:', error);
@@ -44,16 +41,10 @@ export default function IntegrationPage() {
         if (!newKeyName) return;
 
         try {
-            const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:8000/api/v1/api-keys/generate', {
+            const newKey: any = await apiRequest('/api/v1/api-keys/generate', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
                 body: JSON.stringify({ name: newKeyName })
             });
-            const newKey = await response.json();
             setApiKeys([newKey, ...apiKeys]);
             setNewKeyName('');
             setShowNewKeyDialog(false);
@@ -67,10 +58,8 @@ export default function IntegrationPage() {
         if (!confirm('Are you sure you want to revoke this API key?')) return;
 
         try {
-            const token = localStorage.getItem('token');
-            await fetch(`http://localhost:8000/api/v1/api-keys/${keyId}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
+            await apiRequest(`/api/v1/api-keys/${keyId}`, {
+                method: 'DELETE'
             });
             setApiKeys(apiKeys.filter(k => k.id !== keyId));
         } catch (error) {

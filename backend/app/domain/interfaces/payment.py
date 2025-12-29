@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Optional
-from backend.app.domain.entities.payment import Subscription, Plan
+from app.domain.entities.payment import Subscription, Plan
 
 class IPaymentGateway(ABC):
     """

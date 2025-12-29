@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, AlertTriangle, CheckCircle2, Users } from 'lucide-react';
+import { apiRequest } from '@/lib/api';
 
 interface SimulationModalProps {
     isOpen: boolean;
@@ -23,25 +24,18 @@ export default function SimulationModal({ isOpen, onClose, userEmails }: Simulat
     const handleBlast = async () => {
         setIsSending(true);
         try {
-            const token = localStorage.getItem('token');
-            const res = await fetch('http://localhost:8000/api/v1/simulation/blast', {
+            await apiRequest('/api/v1/simulation/blast', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
                 body: JSON.stringify({
                     template_id: selectedTemplate,
                     target_users: userEmails // In a real app, we'd pull IDs, but emails work for this mock
                 })
             });
-            if (res.ok) {
-                setIsSuccess(true);
-                setTimeout(() => {
-                    setIsSuccess(false);
-                    onClose();
-                }, 2000);
-            }
+            setIsSuccess(true);
+            setTimeout(() => {
+                setIsSuccess(false);
+                onClose();
+            }, 2000);
         } catch (err) {
             console.error("Simulation error:", err);
         } finally {

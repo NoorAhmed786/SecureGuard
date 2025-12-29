@@ -1,8 +1,8 @@
 from datetime import datetime
 import stripe
 from typing import Optional
-from backend.app.domain.entities.payment import Subscription, Plan, SubscriptionStatus
-from backend.app.domain.interfaces.payment import IPaymentGateway
+from app.domain.entities.payment import Subscription, Plan, SubscriptionStatus
+from app.domain.interfaces.payment import IPaymentGateway
 import os
 
 class StripeAdapter(IPaymentGateway):
