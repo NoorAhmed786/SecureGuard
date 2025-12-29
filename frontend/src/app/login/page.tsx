@@ -29,7 +29,7 @@ export default function LoginPage() {
 
                 // Decode role for redirection
                 try {
-                    const { jwtDecode }: any = await import('jwt-decode'); // dynamic import restricted from being typed easily here
+                    const { jwtDecode } = await import('jwt-decode');
                     const decoded = jwtDecode(data.access_token) as { role?: string };
                     const role = decoded.role || 'user';
 
