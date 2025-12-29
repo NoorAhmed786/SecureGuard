@@ -2,6 +2,8 @@
 
 SecureGuard AI is a high-performance, premium-grade SaaS platform designed to protect organizations from modern cyber threats. It features **real-time phishing defense**, a **unified security scanner**, a **RAG-powered AI Security Assistant**, and **interactive awareness training**.
 
+![Main Interface](screenshots/home.png)
+
 Designed for **visual excellence**, **high-speed performance**, and **Clean Architecture**.
 
 ---
@@ -25,6 +27,38 @@ docker-compose up --build
 > [!NOTE]
 > - **Frontend**: [http://localhost:3000](http://localhost:3000)
 > - **Backend (API Docs)**: [http://localhost:8000/docs](http://localhost:8000/docs)
+
+---
+
+## 📸 Platform Showcase
+
+### 🖥️ Dashboard & Command Center
+A premium dashboard providing real-time metrics, threat visualizations, and actionable insights.
+![Dashboard](screenshots/dashboard.png)
+
+### 🛡️ Unified Security Scanner
+Analyze suspicious emails for phishing and scan public-facing websites for vulnerabilities.
+![Scanner](screenshots/scanner.png)
+
+### 🤖 AI Security Assistant (RAG)
+An intelligent security companion that can answer technical questions and analyze threats based on a proprietary knowledge base.
+![AI Assistant](screenshots/rag.png)
+
+### 🚨 Real-time Alerts
+Instant notifications delivered to the Dashboard whenever a threat is detected.
+![Alerts](screenshots/alerts.png)
+
+### 🎓 Cybersecurity Awareness Training
+Interactive courses to educate employees about modern security threats.
+![Courses](screenshots/courses.png)
+
+### 🔌 Edge Protection Widget
+Lightweight JavaScript snippet to protect client websites at the edge.
+![Widget](screenshots/widget.png)
+
+### 💳 Subscription & Payments
+Stripe-integrated billing for seamless enterprise scaling.
+![Payment](screenshots/payment.png)
 
 ---
 
@@ -76,23 +110,16 @@ npm run dev
 SecureGuard/
 ├── backend/            # FastAPI source code & Dockerfile
 ├── frontend/           # Next.js source code & Dockerfile
+├── screenshots/        # UI screenshots & assets
 ├── docker-compose.yml  # Multi-container orchestration
 └── README.md           # This file
 ```
 
 ---
 
-## ✨ Key Features
-- **🛡️ Unified Security Scanner**: Analysis of emails and websites for vulnerabilities.
-- **🚨 Real-time Phishing Alerts**: WebSocket-based notifications.
-- **🤖 RAG-powered AI Assistant**: Context-aware security intelligence.
-- **📊 Security Command Center**: Premium dashboard with threat visualizations.
-- **🔌 Widget Integration**: Edge protection via JS snippet.
-
----
-
 ## 📸 Final UI Reference
 Built with a professional dark theme, glassmorphism, and smooth animations.
+![Login Page](screenshots/login.png)
 
 ---
 
