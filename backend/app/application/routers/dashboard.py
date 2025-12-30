@@ -1,11 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.infrastructure.database.setup import get_db
-from app.infrastructure.database.models import IncidentModel, UserModel
-from typing import Dict, Any
+from app.infrastructure.database.models import IncidentModel
 
-from app.domain.entities.phishing import IncidentStatus, ThreatLevel
+from app.domain.entities.phishing import ThreatLevel
 
 router = APIRouter(prefix="/api/v1/dashboard", tags=["dashboard"])
 

@@ -33,7 +33,13 @@ export default function Dashboard() {
     useEffect(() => {
         async function fetchStats() {
             try {
-                const stats: any = await apiRequest('/api/v1/dashboard/stats');
+                const stats = await apiRequest<{
+                    total_scans: number;
+                    threats_detected: number;
+                    training_progress: number;
+                    security_score: number;
+                    alerts: Alert[];
+                }>('/api/v1/dashboard/stats');
                 setData(stats);
             } catch (err) {
                 console.error("Dashboard Fetch Error:", err);

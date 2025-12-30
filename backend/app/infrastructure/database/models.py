@@ -2,8 +2,6 @@ from sqlalchemy import Column, String, Float, DateTime, JSON, Enum as SQLEnum, B
 from app.infrastructure.database.setup import Base
 from app.domain.entities.phishing import IncidentStatus, ThreatLevel
 from datetime import datetime
-import datetime as dt_module
-import secrets
 
 class IncidentModel(Base):
     __tablename__ = "incidents"

@@ -3,14 +3,12 @@ import os
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.infrastructure.database.setup import get_db
-from app.infrastructure.database.models import UserModel
-from typing import Dict, Any
 
 # Ensure Stripe API key is loaded
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY", "sk_test_mock")
 
-from app.application.dependencies import get_payment_gateway
-from app.infrastructure.payment.stripe_adapter import StripeAdapter
+from app.application.dependencies import get_payment_gateway  # noqa: E402
+from app.infrastructure.payment.stripe_adapter import StripeAdapter  # noqa: E402
 
 router = APIRouter(prefix="/api/v1/payment", tags=["payment"])
 
@@ -21,7 +19,7 @@ async def create_checkout_session(
     payment_gateway: StripeAdapter = Depends(get_payment_gateway)
 ):
     # Debug: Log incoming request
-    print(f"\n=== CHECKOUT SESSION REQUEST ===")
+    print("\n=== CHECKOUT SESSION REQUEST ===")
     print(f"Requested plan_id: '{plan_id}'")
     print(f"ENV STRIPE_PRICE_PRO: '{os.getenv('STRIPE_PRICE_PRO')}'")
     print(f"ENV STRIPE_PRICE_ENTERPRISE: '{os.getenv('STRIPE_PRICE_ENTERPRISE')}'")
@@ -61,8 +59,8 @@ async def create_checkout_session(
 @router.post("/webhook")
 async def stripe_webhook(request: Request, db: AsyncSession = Depends(get_db)):
     # Stub for Stripe webhooks
-    payload = await request.body()
-    sig_header = request.headers.get("stripe-signature")
+    _payload = await request.body()
+    _sig_header = request.headers.get("stripe-signature")
     
     # In a real app, you would verify the webhook signature here
     # event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)

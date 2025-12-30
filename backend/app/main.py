@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Dict, Any
@@ -8,17 +8,15 @@ import os
 # Load environment variables globally
 load_dotenv(os.path.join(os.path.dirname(__file__), "../.env"), override=True)
 
-from app.domain.entities.phishing import PhishingIncident
-from app.application.use_cases.analyze_email import AnalyzeEmailUseCase
-from app.application.dependencies import (
+from app.application.use_cases.analyze_email import AnalyzeEmailUseCase  # noqa: E402
+from app.application.dependencies import (  # noqa: E402
     get_analyzer,
     get_payment_gateway,
     get_vector_store,
-    get_llm_provider,
     get_websocket_manager
 )
-from app.infrastructure.database.setup import get_db
-from app.infrastructure.database.repositories import SQLAlchemyIncidentRepository
+from app.infrastructure.database.setup import get_db  # noqa: E402
+from app.infrastructure.database.repositories import SQLAlchemyIncidentRepository  # noqa: E402
 
 app = FastAPI(title="AI Phishing Detection SaaS", version="1.0.0")
 
@@ -80,7 +78,7 @@ async def startup():
         break
 
 # Include Routers
-from app.application.routers import auth, dashboard, payment, simulation, scanner, website_scanner, api_keys, widget_api
+from app.application.routers import auth, dashboard, payment, simulation, scanner, website_scanner, api_keys, widget_api  # noqa: E402
 app.include_router(auth.router)
 app.include_router(dashboard.router)
 app.include_router(payment.router)
@@ -90,7 +88,7 @@ app.include_router(website_scanner.router)
 app.include_router(api_keys.router)
 app.include_router(widget_api.router)
 
-from fastapi import WebSocket, WebSocketDisconnect
+from fastapi import WebSocket, WebSocketDisconnect  # noqa: E402
 
 # WebSocket endpoint for real-time alerts
 @app.websocket("/ws/alerts")

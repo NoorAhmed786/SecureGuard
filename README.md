@@ -105,6 +105,46 @@ npm run dev
 
 ---
 
+## 🔄 CI/CD Pipeline
+
+The project uses **GitHub Actions** for continuous integration and delivery. The pipeline is defined in `.github/workflows/main.yml`.
+
+### Workflow Stages
+1.  **Backend Quality**:
+    - Installs Python dependencies.
+    - Runs `ruff` for fast linting and code quality checks.
+2.  **Frontend Quality**:
+    - Installs Node.js dependencies.
+    - Runs `npm run lint` (ESLint) to ensure type safety and code quality.
+3.  **Build & Publish**:
+    - **Trigger**: Only on push to `main` branch.
+    - Builds production-ready Docker images for Frontend and Backend.
+    - Pushes images to **GitHub Container Registry (GHCR)**.
+
+### 🚀 How to Run
+The pipeline is **automatic**. To trigger a full build and deployment:
+```bash
+git add .
+git commit -m "feat: your amazing change"
+git push origin main
+```
+Monitor the progress in the **Actions** tab of your GitHub repository.
+
+> [!IMPORTANT]
+> Ensure all linting checks pass locally before pushing code.
+> - **Backend**: `cd backend && ruff check .`
+> - **Frontend**: `cd frontend && npm run lint`
+
+### ✅ Project Verification Checks
+The following checks were implemented and passed to ensure a robust deployment:
+| Component | Check Type | Tool | Command | Status |
+| :--- | :--- | :--- | :--- | :--- |
+| **Backend** | Linting & Style | `ruff` | `ruff check .` | ✅ Passed |
+| **Frontend** | Static Analysis | `ESLint` | `npm run lint` | ✅ Passed |
+| **Frontend** | Compilation | `Next.js` | `npm run build` | ✅ Passed |
+
+---
+
 ## 📂 Project Structure
 ```text
 SecureGuard/

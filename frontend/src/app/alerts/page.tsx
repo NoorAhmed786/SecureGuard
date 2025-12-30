@@ -23,7 +23,7 @@ export default function AlertsPage() {
     useEffect(() => {
         async function fetchIncidents() {
             try {
-                const data: any = await apiRequest('/api/v1/dashboard/all-alerts');
+                const data = await apiRequest('/api/v1/dashboard/all-alerts');
                 setIncidents(Array.isArray(data) ? data : []);
             } catch (err) {
                 console.error("Fetch incidents error:", err);
@@ -130,7 +130,7 @@ export default function AlertsPage() {
                                     </tr>
                                 ))
                             ) : (
-                                filteredIncidents.map((alert: any) => (
+                                filteredIncidents.map((alert) => (
                                     <tr key={alert.id} className="hover:bg-white/5 transition-colors group">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-4">

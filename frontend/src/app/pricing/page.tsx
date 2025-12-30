@@ -63,19 +63,19 @@ export default function PricingPage() {
 
         setLoadingPlan(planId);
         try {
-            const data: any = await apiRequest(`/api/v1/payment/create-checkout-session`, {
+            const data = await apiRequest(`/api/v1/payment/create-checkout-session`, {
                 method: 'POST',
                 params: { plan_id: planId }
-            });
+            }) as { checkout_url: string };
 
             if (data.checkout_url) {
                 window.location.href = data.checkout_url;
             } else {
                 throw new Error('No checkout URL received from server');
             }
-        } catch (error: any) {
+        } catch (error) {
             console.error('Payment Error:', error);
-            alert(error.message || "Connection error. Is the backend running?");
+            alert((error as Error).message || "Connection error. Is the backend running?");
         } finally {
             setLoadingPlan(null);
         }

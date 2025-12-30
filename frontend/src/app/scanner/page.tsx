@@ -15,7 +15,54 @@ export default function ScannerPage() {
     const [body, setBody] = useState('');
     const [isScanning, setIsScanning] = useState(false);
     const [progress, setProgress] = useState(0);
-    const [scanResult, setScanResult] = useState<any>(null);
+
+    // Defined Types for API Responses
+    interface ScanIndicator {
+        type: string;
+        severity: string;
+        label: string;
+        message: string;
+    }
+
+    interface EmailScanResponse {
+        id: string;
+        status: string;
+        threat_level: string;
+        score: number;
+        sender: string;
+        subject: string;
+        report: {
+            indicators: ScanIndicator[];
+        };
+    }
+
+    interface WebsiteScanVulnerability {
+        severity: string;
+        type: string;
+        description: string;
+    }
+
+    interface WebsiteScanResponse {
+        scan_id: string;
+        url: string;
+        security_score: number;
+        vulnerabilities_count: number;
+        vulnerabilities: WebsiteScanVulnerability[];
+        checks: Record<string, unknown>;
+    }
+
+    interface ScanResultState {
+        threat_level: string;
+        score: number;
+        report: { indicators: ScanIndicator[] };
+        error?: boolean;
+        detail?: string;
+        isUrlScan?: boolean;
+        url?: string;
+        subject?: string;
+    }
+
+    const [scanResult, setScanResult] = useState<ScanResultState | null>(null);
     const [scanStep, setScanStep] = useState('');
 
     const handleScan = async (e: React.FormEvent) => {
@@ -40,7 +87,7 @@ export default function ScannerPage() {
                 await new Promise(r => setTimeout(r, 600));
                 setScanStep("Scanning URLs and attachments...");
 
-                const data: any = await apiRequest("/api/v1/scan", {
+                const data = await apiRequest<EmailScanResponse>("/api/v1/scan", {
                     method: "POST",
                     body: JSON.stringify({
                         sender: sender || "unknown@example.com",
@@ -48,25 +95,32 @@ export default function ScannerPage() {
                         body
                     })
                 });
-                setScanResult(data);
+
+                // Map API response to State
+                setScanResult({
+                    threat_level: data.threat_level,
+                    score: data.score,
+                    report: data.report,
+                    subject: data.subject
+                });
             } else {
                 setScanStep("Resolving domain...");
                 await new Promise(r => setTimeout(r, 600));
                 setScanStep("Checking security headers...");
 
-                const data: any = await apiRequest("/api/v1/scanner/scan-website", {
+                const data = await apiRequest<WebsiteScanResponse>("/api/v1/scanner/scan-website", {
                     method: "POST",
                     body: JSON.stringify({ url })
                 });
 
                 // Map website scanner results for visual consistency
                 setScanResult({
-                    ...data,
                     isUrlScan: true,
+                    url: data.url,
                     threat_level: data.security_score < 40 ? 'CRITICAL' : data.security_score < 70 ? 'HIGH' : 'LOW',
-                    score: (100 - data.security_score) / 100,
+                    score: (100 - data.security_score) / 100, // Invert score: 100 (safe) -> 0 (risk)
                     report: {
-                        indicators: data.vulnerabilities.map((v: any) => ({
+                        indicators: data.vulnerabilities.map((v) => ({
                             type: 'link',
                             severity: v.severity.toLowerCase(),
                             label: v.type,
@@ -84,14 +138,17 @@ export default function ScannerPage() {
             console.error(error);
             setScanResult({
                 error: true,
-                detail: "Security analysis failed. Please try again."
+                detail: (error as Error).message || "Security analysis failed. Please try again.",
+                threat_level: 'UNKNOWN',
+                score: 0,
+                report: { indicators: [] }
             });
         } finally {
             setIsScanning(false);
         }
     };
 
-    const getThreatColor = (level: string) => {
+    const getThreatColor = (level?: string) => {
         switch (level?.toLowerCase()) {
             case 'critical':
             case 'high': return 'text-red-500';
@@ -317,7 +374,7 @@ export default function ScannerPage() {
                                 <div className="p-4 rounded-xl bg-blue-600/10 border border-blue-500/20 flex items-center gap-4">
                                     <ShieldCheck className="text-blue-500 shrink-0" size={24} />
                                     <p className="text-blue-100/70 text-xs leading-relaxed">
-                                        This scan has been cross-referenced with SecureGuard's global threat database. A real-time alert was broadcasted to your organization's security team.
+                                        This scan has been cross-referenced with SecureGuard&apos;s global threat database. A real-time alert was broadcasted to your organization&apos;s security team.
                                     </p>
                                 </div>
                             </div>
@@ -327,11 +384,11 @@ export default function ScannerPage() {
                         <div className="space-y-6">
                             <div className="flex items-center gap-3 ml-2">
                                 <div className="w-8 h-1 bg-blue-600 rounded-full" />
-                                <h4 className="text-lg font-bold text-white uppercase tracking-widest text-sm">Why it's a risk</h4>
+                                <h4 className="text-lg font-bold text-white uppercase tracking-widest text-sm">Why it&apos;s a risk</h4>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {scanResult.report?.indicators?.map((indicator: any, idx: number) => (
+                                {scanResult.report?.indicators?.map((indicator, idx: number) => (
                                     <motion.div
                                         key={idx}
                                         initial={{ opacity: 0, y: 10 }}

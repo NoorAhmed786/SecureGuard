@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from 'react';
 import { CreditCard, Loader2 } from 'lucide-react';
 
 interface CheckoutButtonProps {
@@ -11,7 +10,7 @@ interface CheckoutButtonProps {
     onClick: () => void;
 }
 
-export default function CheckoutButton({ planId, price, isCurrentPlan, isLoading, onClick }: CheckoutButtonProps) {
+export default function CheckoutButton({ price, isCurrentPlan, isLoading, onClick }: CheckoutButtonProps) {
     if (isCurrentPlan) {
         return (
             <button disabled className="w-full py-3 rounded-xl bg-slate-800 text-slate-500 font-bold cursor-not-allowed">

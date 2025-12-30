@@ -21,7 +21,7 @@ const Atmosphere = () => {
 
 const ScanRing = () => {
   const ref = useRef<THREE.Mesh>(null);
-  useFrame((state) => {
+  useFrame(() => {
     if (ref.current) {
       ref.current.rotation.y += 0.01;
       ref.current.rotation.x += 0.005;
@@ -39,7 +39,7 @@ const ScanRing = () => {
 const Globe = () => {
   const meshRef = useRef<THREE.Mesh>(null);
 
-  useFrame((state, delta) => {
+  useFrame((_, delta) => {
     if (meshRef.current) {
       meshRef.current.rotation.y += delta * 0.15;
     }

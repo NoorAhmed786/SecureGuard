@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Settings, User, Lock, Bell, Shield, Save, Loader2, Mail } from 'lucide-react';
 import ThreeGlobe from '@/components/ThreeGlobe';
+import { jwtDecode } from 'jwt-decode';
 
 export default function SettingsPage() {
     const [isLoading, setIsLoading] = useState(false);
@@ -19,8 +20,8 @@ export default function SettingsPage() {
             try {
                 // Dynamically import to avoid SSR issues if not using "use client" correctly
                 // or just use typical import if we are sure it's client-side
-                const { jwtDecode }: any = require('jwt-decode');
-                const decoded: any = jwtDecode(token);
+                const decoded = jwtDecode(token) as { sub?: string; name?: string; role?: string };
+                // eslint-disable-next-line react-hooks/set-state-in-effect
                 setUser({
                     email: decoded.sub || 'No Email Found',
                     name: decoded.name || decoded.sub?.split('@')[0] || 'User',

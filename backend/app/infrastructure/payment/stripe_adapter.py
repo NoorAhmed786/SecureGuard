@@ -3,7 +3,6 @@ import stripe
 from typing import Optional
 from app.domain.entities.payment import Subscription, Plan, SubscriptionStatus
 from app.domain.interfaces.payment import IPaymentGateway
-import os
 
 class StripeAdapter(IPaymentGateway):
     def __init__(self, api_key: str):
@@ -52,7 +51,7 @@ class StripeAdapter(IPaymentGateway):
 
     async def create_checkout_session(self, user_id: str, price_id: str, success_url: str, cancel_url: str):
         """Creates a Stripe Checkout Session for subscription."""
-        print(f"\n=== STRIPE ADAPTER ===")
+        print("\n=== STRIPE ADAPTER ===")
         print(f"Creating session with price_id: '{price_id}'")
         print(f"User ID: '{user_id}'")
         

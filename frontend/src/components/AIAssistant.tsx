@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, X, Send, Bot, User, Loader2, Sparkles } from 'lucide-react';
+import { MessageSquare, X, Send, Bot, Loader2, Sparkles } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
 
 export default function AIAssistant() {
@@ -34,7 +34,7 @@ export default function AIAssistant() {
                 body: JSON.stringify({ user_id: 'guest', query: userMsg })
             });
             setMessages(prev => [...prev, { role: 'bot', content: data.answer }]);
-        } catch (err) {
+        } catch {
             setMessages(prev => [...prev, { role: 'bot', content: "I'm having trouble connecting to my brain right now. Please try again later!" }]);
         } finally {
             setIsLoading(false);

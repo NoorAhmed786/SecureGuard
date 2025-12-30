@@ -46,7 +46,7 @@ export async function apiRequest<T>(endpoint: string, options: RequestOptions = 
         try {
             const errorData = await response.json();
             errorMessage = errorData.detail || errorData.message || errorMessage;
-        } catch (e) {
+        } catch {
             // Fallback to status text
             errorMessage = response.statusText || errorMessage;
         }

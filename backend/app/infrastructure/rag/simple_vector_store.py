@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import List
 from app.domain.entities.rag import KnowledgeBaseDocument
 from app.domain.interfaces.rag import IVectorStore

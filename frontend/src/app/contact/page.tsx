@@ -9,7 +9,7 @@ export default function ContactPage() {
   return (
     <main className="min-h-screen bg-slate-950 text-white relative overflow-hidden">
       <ThreeGlobe />
-      
+
       <div className="relative z-10 container mx-auto px-4 py-16">
         <header className="flex justify-between items-center mb-20">
           <Link href="/" className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">
@@ -19,12 +19,12 @@ export default function ContactPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start max-w-6xl mx-auto">
           <div className="space-y-8">
-            <motion.h1 
+            <motion.h1
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               className="text-5xl font-bold"
             >
-              Let's Talk <span className="text-blue-500">Security</span>
+              Let&apos;s Talk <span className="text-blue-500">Security</span>
             </motion.h1>
             <p className="text-slate-400 text-lg max-w-md">
               Have questions about our AI models or need a custom enterprise solution? Our team of security experts is here to help.

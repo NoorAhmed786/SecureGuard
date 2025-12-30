@@ -246,7 +246,7 @@ export default function IntegrationPage() {
                                 <h4 className="text-blue-400 font-semibold mb-2">What the Widget Does:</h4>
                                 <ul className="text-slate-300 space-y-2 text-sm">
                                     <li>✓ Monitors all link clicks on your website</li>
-                                    <li>✓ Checks URLs against SecureGuard's threat database</li>
+                                    <li>✓ Checks URLs against SecureGuard&apos;s threat database</li>
                                     <li>✓ Shows warning modal for suspicious links</li>
                                     <li>✓ Blocks known phishing and malware sites</li>
                                     <li>✓ Lightweight (&lt;10KB) and fast</li>

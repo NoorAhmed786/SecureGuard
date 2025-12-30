@@ -8,9 +8,7 @@ import {
     FileText,
     HelpCircle,
     ChevronRight,
-    CheckCircle2,
-    Lock,
-    Award
+    CheckCircle2
 } from 'lucide-react';
 import Link from 'next/link';
 

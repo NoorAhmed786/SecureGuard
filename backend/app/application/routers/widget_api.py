@@ -37,7 +37,7 @@ async def verify_api_key(
     result = await db.execute(
         select(APIKeyModel)
         .where(APIKeyModel.key == x_api_key)
-        .where(APIKeyModel.is_active == True)
+        .where(APIKeyModel.is_active.is_(True))
     )
     api_key = result.scalar_one_or_none()
     
@@ -131,7 +131,7 @@ async def get_widget_analytics(
     threats_result = await db.execute(
         select(func.count(WidgetEventModel.id))
         .where(WidgetEventModel.api_key_id == api_key.id)
-        .where(WidgetEventModel.is_threat == True)
+        .where(WidgetEventModel.is_threat.is_(True))
     )
     threats_blocked = threats_result.scalar()
     

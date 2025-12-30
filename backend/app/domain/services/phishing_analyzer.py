@@ -5,7 +5,6 @@ This domain service orchestrates multiple detection mechanisms to analyze
 phishing incidents, including AI/ML classification, threat intelligence,
 and typosquatting detection.
 """
-from typing import Dict, Any
 from app.domain.entities.phishing import PhishingIncident
 from app.domain.interfaces.detection import IPhishingAnalyzer, IThreatIntelProvider
 from app.domain.services.typosquatting import TyposquattingDetector

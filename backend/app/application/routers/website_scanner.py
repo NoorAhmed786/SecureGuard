@@ -4,7 +4,7 @@ Allows users to scan websites for security vulnerabilities
 """
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel
 from app.infrastructure.database.setup import get_db
 from app.infrastructure.database.models import WebsiteScanModel
 from app.infrastructure.security.security_scanner import scanner

@@ -6,7 +6,7 @@ import ssl
 import socket
 import requests
 from urllib.parse import urlparse
-from typing import Dict, List, Any
+from typing import Dict, Any
 import re
 
 class SecurityScanner:

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import List, Dict, Any
-from app.domain.entities.rag import KnowledgeBaseDocument, AgentResponse
+from typing import List
+from app.domain.entities.rag import KnowledgeBaseDocument
 
 class IVectorStore(ABC):
     """

@@ -1,8 +1,5 @@
-import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
-import pickle
-import os
 
 class PhishingClassifier:
     def __init__(self):

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from 'framer-motion';
-import { Play, CheckCircle2, Clock, Award, BookOpen, Star } from 'lucide-react';
+import { Play, CheckCircle2, Clock, Award, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 
 export default function TrainingPage() {
@@ -102,8 +102,8 @@ export default function TrainingPage() {
                             <div className="pt-2">
                                 <Link href={`/training/${course.id}`}>
                                     <button className={`w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${course.progress === 100
-                                            ? 'bg-slate-900 text-slate-300 hover:bg-slate-800'
-                                            : 'bg-white text-black hover:bg-slate-200'
+                                        ? 'bg-slate-900 text-slate-300 hover:bg-slate-800'
+                                        : 'bg-white text-black hover:bg-slate-200'
                                         }`}>
                                         {course.progress === 100 ? <CheckCircle2 size={18} /> : <Play size={18} />}
                                         {course.progress === 100 ? 'Review Module' : course.progress > 0 ? 'Resume Course' : 'Start Course'}
