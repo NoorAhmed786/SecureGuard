@@ -43,7 +43,6 @@ async def startup():
             sections = content.split("##")
             docs = []
             from app.domain.entities.rag import KnowledgeBaseDocument
-            import uuid
             
             for section in sections:
                 if section.strip():
