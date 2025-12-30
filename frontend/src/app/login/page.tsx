@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { jwtDecode } from 'jwt-decode';
 import { loginRequest, apiRequest } from '@/lib/api';
 
 export default function LoginPage() {
@@ -24,12 +25,11 @@ export default function LoginPage() {
                 formData.append('username', email);
                 formData.append('password', password);
 
-                const data = await loginRequest(formData) as { access_token: string };
+                const data = await loginRequest(formData);
                 localStorage.setItem('token', data.access_token);
 
                 // Decode role for redirection
                 try {
-                    const { jwtDecode } = await import('jwt-decode');
                     const decoded = jwtDecode(data.access_token) as { role?: string };
                     const role = decoded.role || 'user';
 

@@ -14,7 +14,7 @@ interface RequestOptions extends RequestInit {
  */
 export async function apiRequest<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
     const { params, ...fetchOptions } = options;
-    
+
     // Construct URL with query parameters if provided
     let url = `${API_BASE_URL}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
     if (params) {
@@ -64,7 +64,7 @@ export async function apiRequest<T>(endpoint: string, options: RequestOptions = 
 /**
  * Utility for login requests (formdata)
  */
-export async function loginRequest(formData: URLSearchParams) {
+export async function loginRequest(formData: URLSearchParams): Promise<{ access_token: string }> {
     const url = `${API_BASE_URL}/auth/login`;
     const response = await fetch(url, {
         method: 'POST',
