@@ -29,10 +29,10 @@ export default function AIAssistant() {
         setIsLoading(true);
 
         try {
-            const data: any = await apiRequest('/api/v1/rag/ask', {
+            const data = await apiRequest('/api/v1/rag/ask', {
                 method: 'POST',
                 body: JSON.stringify({ user_id: 'guest', query: userMsg })
-            });
+            }) as { answer: string };
             setMessages(prev => [...prev, { role: 'bot', content: data.answer }]);
         } catch (err) {
             setMessages(prev => [...prev, { role: 'bot', content: "I'm having trouble connecting to my brain right now. Please try again later!" }]);
