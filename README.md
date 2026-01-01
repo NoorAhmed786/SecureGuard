@@ -273,6 +273,7 @@ SecureGuard/
 ├── frontend/           # Next.js source code & Dockerfile
 ├── screenshots/        # UI screenshots & assets
 ├── docker-compose.yml  # Multi-container orchestration
+├── sonar-project.properties # SonarCloud configuration
 └── README.md           # This file
 ```
 
