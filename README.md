@@ -75,6 +75,40 @@ graph TD
 To assist with **Threat Modeling** (STRIDE/DREAD), we clearly define trust boundaries and assets.
 
 ### 1. Trust Boundaries
+```mermaid
+flowchart TB
+    subgraph Internet ["Untrusted Zone (Internet)"]
+        Attacker[("😈 Threat Actor")]
+        User[("👤 Legitimate User")]
+    end
+
+    subgraph DMZ ["Demilitarized Zone (DMZ)"]
+        Frontend["🖥️ Next.js Frontend"]
+    end
+
+    subgraph Trusted ["Trusted Internal Network"]
+        Backend["🛡️ FastAPI Backend"]
+        DB[("🗄️ PostgreSQL")]
+        Vector[("🧠 RAG Vector Store")]
+    end
+
+    %% Data Flows
+    User -->|HTTPS/TLS| Frontend
+    Attacker -.->|DDoS / XSS / Injection| Frontend
+    
+    Frontend <-->|REST API / WSS (Scanning)| Backend
+    
+    Backend <-->|SQL| DB
+    Backend <-->|Embeddings| Vector
+
+    %% Trust Boundaries
+    linkStyle 0,1 stroke:#00ff00,stroke-width:2px;
+    linkStyle 2 stroke:#ff0000,stroke-width:2px,stroke-dasharray: 5 5;
+    
+    style Frontend fill:#e1f5fe,stroke:#01579b
+    style Backend fill:#e8f5e9,stroke:#2e7d32
+    style DB fill:#fff3e0,stroke:#ef6c00
+```
 *   **Boundary 1: Internet vs. Frontend**: The `Next.js` server exposes public endpoints. All inputs must be sanitized.
 *   **Boundary 2: Frontend vs. Backend**: Communications occur over HTTP/WebSocket. The Backend treats the Frontend as an untrusted client (validates all tokens and payloads).
 *   **Boundary 3: Backend vs. Database**: Secured via internal Docker network; credentials passed via environment variables.
@@ -148,11 +182,11 @@ Stripe-integrated billing for seamless enterprise scaling.
 
 ---
 
-## 🏛️ Engineering & Architecture Details
+## 🏛️ Technical Implementation Details
 
-This project is built for scale and maintainability, strictly adhering to **SOLID principles** and **Layered Clean Architecture**.
+This project is strictly structured around **SOLID principles** and **Clean Architecture**.
 
-### Architecture Layers:
+### Architecture Layers
 - **Application Layer**: Business use cases and REST API routers (FastAPI).
 - **Infrastructure Layer**: Technical implementations—PostgreSQL (SQLAlchemy), Stripe, AI Providers, and Security Scanners.
 - **Domain Layer**: Core business entities and logic (Pydantic schemas/models).
@@ -161,8 +195,8 @@ This project is built for scale and maintainability, strictly adhering to **SOLI
 | Component | Technology | Purpose |
 | :--- | :--- | :--- |
 | **Backend** | Python 3.11, FastAPI, SQLAlchemy | High-performance async API |
-| **Frontend** | Next.js 14+, React, TypeScript | Modern SPA with SSR |
-| **Database** | PostgreSQL | Persistent data storage |
+| **Frontend** | Next.js 16, React 19, TypeScript | Modern SPA with SSR |
+| **Database** | PostgreSQL 15 | Persistent data storage |
 | **UI/UX** | Tailwind CSS, Framer Motion | Premium, fluid animations |
 | **AI/ML** | Scikit-learn, VectorStore | Phishing detection & RAG |
 
