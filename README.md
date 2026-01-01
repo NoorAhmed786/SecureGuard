@@ -292,26 +292,6 @@ We maintain a rigorous security documentation standard following the **Microsoft
 
 ---
 
-## ⚖️ Compliance & Audit (Assignment)
-
-We maintain a rigorous security documentation standard following the **Microsoft SDL** and **STRIDE** methodology.
-
-- **Threat Model**: [threat_model/secureguard_report.html](threat_model/secureguard_report.html)
-- **Justification Rationale**: [threat_model/justification.md](threat_model/justification.md)
-- **Data Source**: [threat_model/secureguard.tm](threat_model/secureguard.tm)
-
----
-
-## ⚖️ Compliance & Audit (Assignment)
-
-We maintain a rigorous security documentation standard following the **Microsoft SDL** and **STRIDE** methodology.
-
-- **Threat Model**: [threat_model/secureguard_report.html](threat_model/secureguard_report.html)
-- **Justification Rationale**: [threat_model/justification.md](threat_model/justification.md)
-- **Data Source**: [threat_model/secureguard.tm](threat_model/secureguard.tm)
-
----
-
 ## 📸 Final UI Reference
 Built with a professional dark theme, glassmorphism, and smooth animations.
 ![Login Page](screenshots/login.png)
