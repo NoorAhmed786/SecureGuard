@@ -262,6 +262,7 @@ The following checks were implemented and passed to ensure a robust deployment:
 | **Backend** | Linting & Style | `ruff` | `ruff check .` | ✅ Passed |
 | **Frontend** | Static Analysis | `ESLint` | `npm run lint` | ✅ Passed |
 | **Frontend** | Compilation | `Next.js` | `npm run build` | ✅ Passed |
+| **Full Stack** | Security & Quality | `SonarCloud` | `Automatic Analysis` | ✅ Integrated |
 
 ---
 
