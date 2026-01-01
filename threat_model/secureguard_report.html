@@ -1,0 +1,200 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Threat Model Report - SecureGuard AI</title>
+        
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 1200px; margin: 0 auto; padding: 20px; background-color: #f4f6f8; }
+        header { background: #2c3e50; color: #fff; padding: 20px; border-radius: 8px 8px 0 0; }
+        h1 { margin: 0; }
+        .meta { font-size: 0.9em; opacity: 0.8; }
+        .section { background: #fff; padding: 20px; margin-bottom: 20px; border-radius: 0 0 8px 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #ddd; }
+        th { background-color: #f8f9fa; font-weight: 600; }
+        .tag { padding: 4px 8px; border-radius: 4px; font-size: 0.85em; font-weight: bold; color: #fff; }
+        .critical { background-color: #e74c3c; }
+        .high { background-color: #e67e22; }
+        .medium { background-color: #f1c40f; color: #333; }
+        .low { background-color: #3498db; }
+        .mitigated { background-color: #27ae60; }
+        .in-progress { background-color: #f39c12; }
+        .stride { font-weight: bold; color: #2c3e50; }
+    </style>
+    
+    </head>
+    <body>
+        <header>
+            <h1>🛡️ Assignment Report: SecureGuard AI</h1>
+            <p class="meta">Methodology: Microsoft SDL (STRIDE) | Generated: 2026-01-01 20:45</p>
+        </header>
+
+        <div class="section">
+            <h2>System Overview</h2>
+            <p>SaaS platform for Phishing Detection, Security Scanning, and Awareness Training.</p>
+        </div>
+
+        <div class="section">
+            <h2>💎 Critical Assets</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Asset Name</th>
+                        <th>Value/Sensitivity</th>
+                    </tr>
+                </thead>
+                <tbody>
+    
+                    <tr>
+                        <td><strong>User Credentials</strong></td>
+                        <td><span class="tag critical">Critical</span></td>
+                    </tr>
+        
+                    <tr>
+                        <td><strong>Payment Tokens</strong></td>
+                        <td><span class="tag critical">Critical</span></td>
+                    </tr>
+        
+                    <tr>
+                        <td><strong>Scan Reports</strong></td>
+                        <td><span class="tag critical">High</span></td>
+                    </tr>
+        
+                    <tr>
+                        <td><strong>JWT Signing Key</strong></td>
+                        <td><span class="tag critical">Critical</span></td>
+                    </tr>
+        
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>⚠️ STRIDE Threat Analysis</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Type</th>
+                        <th>Threat & Component</th>
+                        <th>Likelihood</th>
+                        <th>Impact</th>
+                        <th>Mitigation & Justification</th>
+                    </tr>
+                </thead>
+                <tbody>
+    
+                    <tr>
+                        <td>STRIDE-S-01</td>
+                        <td><span class="stride">Spoofing</span></td>
+                        <td>
+                            <strong>Attacker Impersonates User via Token Theft</strong><br>
+                            <em>(Frontend API Flow)</em>
+                        </td>
+                        <td><span class="tag high">High</span></td>
+                        <td><span class="tag critical">Critical</span></td>
+                        <td>
+                            <div style="margin-bottom: 8px;">
+                                <span class="tag mitigated">Mitigation: HttpOnly Cookies & CSP</span>
+                            </div>
+                            <strong>Justification:</strong> <em>Prevents client-side scripts from accessing session tokens.</em>
+                        </td>
+                    </tr>
+        
+                    <tr>
+                        <td>STRIDE-T-01</td>
+                        <td><span class="stride">Tampering</span></td>
+                        <td>
+                            <strong>SQL Injection</strong><br>
+                            <em>(Backend / DB Flow)</em>
+                        </td>
+                        <td><span class="tag medium">Medium</span></td>
+                        <td><span class="tag critical">Critical</span></td>
+                        <td>
+                            <div style="margin-bottom: 8px;">
+                                <span class="tag mitigated">Mitigation: SQLAlchemy ORM / Parameterized Queries</span>
+                            </div>
+                            <strong>Justification:</strong> <em>Inputs are sanitized before query execution.</em>
+                        </td>
+                    </tr>
+        
+                    <tr>
+                        <td>STRIDE-R-01</td>
+                        <td><span class="stride">Repudiation</span></td>
+                        <td>
+                            <strong>No Audit Trail for Critical Actions</strong><br>
+                            <em>(Payment / Admin Actions)</em>
+                        </td>
+                        <td><span class="tag medium">Medium</span></td>
+                        <td><span class="tag medium">Medium</span></td>
+                        <td>
+                            <div style="margin-bottom: 8px;">
+                                <span class="tag mitigated">Mitigation: Centralized Application Logging</span>
+                            </div>
+                            <strong>Justification:</strong> <em>Creates an immutable record of actions, timestamps, and IPs.</em>
+                        </td>
+                    </tr>
+        
+                    <tr>
+                        <td>STRIDE-I-01</td>
+                        <td><span class="stride">Information Disclosure</span></td>
+                        <td>
+                            <strong>Verbose Stack Traces</strong><br>
+                            <em>(Backend Error Handler)</em>
+                        </td>
+                        <td><span class="tag high">High</span></td>
+                        <td><span class="tag medium">Medium</span></td>
+                        <td>
+                            <div style="margin-bottom: 8px;">
+                                <span class="tag mitigated">Mitigation: Global Exception Handling (Generic Errors)</span>
+                            </div>
+                            <strong>Justification:</strong> <em>Hides internal implementation details from end users.</em>
+                        </td>
+                    </tr>
+        
+                    <tr>
+                        <td>STRIDE-D-01</td>
+                        <td><span class="stride">Denial of Service</span></td>
+                        <td>
+                            <strong>API Resource Exhaustion</strong><br>
+                            <em>(Scanner Endpoint)</em>
+                        </td>
+                        <td><span class="tag high">High</span></td>
+                        <td><span class="tag high">High</span></td>
+                        <td>
+                            <div style="margin-bottom: 8px;">
+                                <span class="tag mitigated">Mitigation: Rate Limiting & Body Size Limits</span>
+                            </div>
+                            <strong>Justification:</strong> <em>Prevents individual users from crashing the server.</em>
+                        </td>
+                    </tr>
+        
+                    <tr>
+                        <td>STRIDE-E-01</td>
+                        <td><span class="stride">Elevation of Privilege</span></td>
+                        <td>
+                            <strong>IDOR (Insecure Direct Object Reference)</strong><br>
+                            <em>(Backend Results API)</em>
+                        </td>
+                        <td><span class="tag medium">Medium</span></td>
+                        <td><span class="tag high">High</span></td>
+                        <td>
+                            <div style="margin-bottom: 8px;">
+                                <span class="tag mitigated">Mitigation: Ownership-based Access Control</span>
+                            </div>
+                            <strong>Justification:</strong> <em>Ensures data access is limited to the resource owner.</em>
+                        </td>
+                    </tr>
+        
+                </tbody>
+            </table>
+        </div>
+        
+        <footer style="text-align: center; margin-top: 40px; color: #7f8c8d; font-size: 0.9em;">
+            SecureGuard Compliance Documentation - Pushed to GitRepo
+        </footer>
+    </body>
+    </html>
+    

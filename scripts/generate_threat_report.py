@@ -3,8 +3,8 @@ import os
 from datetime import datetime
 
 # Configuration
-JSON_FILE = 'docs/threat-model.json'
-OUTPUT_FILE = 'docs/threat-report.html'
+JSON_FILE = 'threat_model/secureguard.tm'
+OUTPUT_FILE = 'threat_model/secureguard_report.html'
 
 def load_threat_model(filepath):
     with open(filepath, 'r') as f:
@@ -48,8 +48,8 @@ def generate_html(data):
     </head>
     <body>
         <header>
-            <h1>🛡️ Threat Model Report: {system['name']}</h1>
-            <p class="meta">Version: {system['version']} | Generated: {datetime.now().strftime('%Y-%m-%d %H:%M')}</p>
+            <h1>🛡️ Assignment Report: {system['name']}</h1>
+            <p class="meta">Methodology: {system['methodology']} | Generated: {datetime.now().strftime('%Y-%m-%d %H:%M')}</p>
         </header>
 
         <div class="section">
@@ -63,7 +63,6 @@ def generate_html(data):
                 <thead>
                     <tr>
                         <th>Asset Name</th>
-                        <th>Description</th>
                         <th>Value/Sensitivity</th>
                     </tr>
                 </thead>
@@ -75,7 +74,6 @@ def generate_html(data):
         html += f"""
                     <tr>
                         <td><strong>{asset['name']}</strong></td>
-                        <td>{asset['description']}</td>
                         <td><span class="tag critical">{asset['value']}</span></td>
                     </tr>
         """
@@ -86,14 +84,15 @@ def generate_html(data):
         </div>
 
         <div class="section">
-            <h2>⚠️ Identified Threats (STRIDE)</h2>
+            <h2>⚠️ STRIDE Threat Analysis</h2>
             <table>
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>STRIDE</th>
-                        <th>Threat Description</th>
-                        <th>Severity</th>
+                        <th>Type</th>
+                        <th>Threat & Component</th>
+                        <th>Likelihood</th>
+                        <th>Impact</th>
                         <th>Mitigation & Justification</th>
                     </tr>
                 </thead>
@@ -102,7 +101,8 @@ def generate_html(data):
     
     # Threats Data
     for threat in threats:
-        severity_class = threat['severity'].lower()
+        likelihood_class = threat['likelihood'].lower()
+        impact_class = threat['impact'].lower()
         status_class = threat['status'].lower().replace(" ", "-")
         
         html += f"""
@@ -111,15 +111,14 @@ def generate_html(data):
                         <td><span class="stride">{threat['stride_category']}</span></td>
                         <td>
                             <strong>{threat['title']}</strong><br>
-                            <em>Component: {threat['component']}</em><br>
-                            {threat['description']}
+                            <em>({threat['component']})</em>
                         </td>
-                        <td><span class="tag {severity_class}">{threat['severity']}</span></td>
+                        <td><span class="tag {likelihood_class}">{threat['likelihood']}</span></td>
+                        <td><span class="tag {impact_class}">{threat['impact']}</span></td>
                         <td>
                             <div style="margin-bottom: 8px;">
-                                <span class="tag {status_class}">{threat['status']}</span>
+                                <span class="tag {status_class}">Mitigation: {threat['mitigation_strategy']}</span>
                             </div>
-                            <strong>Strategy:</strong> {threat['mitigation_strategy']}<br><br>
                             <strong>Justification:</strong> <em>{threat['justification']}</em>
                         </td>
                     </tr>
@@ -131,7 +130,7 @@ def generate_html(data):
         </div>
         
         <footer style="text-align: center; margin-top: 40px; color: #7f8c8d; font-size: 0.9em;">
-            Generated automatically by SecureGuard Threat Engine
+            SecureGuard Compliance Documentation - Pushed to GitRepo
         </footer>
     </body>
     </html>
@@ -144,7 +143,7 @@ def main():
         print(f"Error: Could not find {JSON_FILE}")
         return
 
-    print(f"Loading threat model from {JSON_FILE}...")
+    print(f"Loading threat model data from {JSON_FILE}...")
     data = load_threat_model(JSON_FILE)
     
     print("Generating HTML report...")
