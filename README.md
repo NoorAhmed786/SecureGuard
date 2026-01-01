@@ -38,7 +38,7 @@ graph TD
     
     subgraph "External Services"
         Stripe[Stripe API]
-        OpenAI[LLM Provider (Optional)]
+        OpenAI["LLM Provider (Optional)"]
     end
 
     User -->|HTTPS| Browser
@@ -96,7 +96,7 @@ flowchart TB
     User -->|HTTPS/TLS| Frontend
     Attacker -.->|DDoS / XSS / Injection| Frontend
     
-    Frontend <-->|REST API / WSS (Scanning)| Backend
+    Frontend <-->|REST API / WSS Scanning| Backend
     
     Backend <-->|SQL| DB
     Backend <-->|Embeddings| Vector
