@@ -1,0 +1,142 @@
+{
+    "system_info": {
+        "name": "SecureGuard AI",
+        "version": "1.1.0",
+        "description": "SaaS platform for Phishing Detection, Security Scanning, and Awareness Training.",
+        "methodology": "Microsoft SDL (STRIDE)",
+        "owners": [
+            "NoorAhmed786"
+        ],
+        "date": "2025-01-01"
+    },
+    "assets": [
+        {
+            "id": "ASSET-01",
+            "name": "User Credentials",
+            "description": "Email addresses and password hashes (bcrypt) of registered users.",
+            "value": "Critical"
+        },
+        {
+            "id": "ASSET-02",
+            "name": "Payment Tokens",
+            "description": "Stripe customer IDs and subscription tokens. No raw card data.",
+            "value": "Critical"
+        },
+        {
+            "id": "ASSET-03",
+            "name": "Scan Reports",
+            "description": "Detailed analysis of phishing emails and website vulnerabilities.",
+            "value": "High"
+        },
+        {
+            "id": "ASSET-04",
+            "name": "JWT Signing Key",
+            "description": "Private key used to sign authentication tokens.",
+            "value": "Critical"
+        },
+        {
+            "id": "ASSET-05",
+            "name": "Vector Store Embeddings",
+            "description": "Semantic embeddings of security knowledge base.",
+            "value": "Medium"
+        }
+    ],
+    "threats": [
+        {
+            "id": "STRIDE-S-01",
+            "stride_category": "Spoofing",
+            "title": "Attacker Impersonates User via Token Theft (XSS)",
+            "description": "An attacker exploits a Cross-Site Scripting (XSS) vulnerability in the Frontend to steal the JWT Access Token from LocalStorage.",
+            "component": "Frontend (Next.js)",
+            "severity": "Critical",
+            "mitigation": "Unmitigated",
+            "status": "Mitigated",
+            "mitigation_strategy": "1. Store tokens in HttpOnly, Secure Cookies (not LocalStorage). 2. Implement Content Security Policy (CSP). 3. Sanitize all user inputs using React's default escaping.",
+            "justification": "HttpOnly cookies cannot be accessed by JavaScript, rendering XSS token theft impossible. CSP restricts script execution sources."
+        },
+        {
+            "id": "STRIDE-T-01",
+            "stride_category": "Tampering",
+            "title": "SQL Injection in Search Query",
+            "description": "An attacker injects malicious SQL into the search bar to modify a database query and bypass checks.",
+            "component": "Backend API / PostgreSQL",
+            "severity": "High",
+            "mitigation": "Unmitigated",
+            "status": "Mitigated",
+            "mitigation_strategy": "1. Use SQLAlchemy ORM for all database interactions. 2. Use Parameterized Queries for any raw SQL. 3. Least Privilege DB User.",
+            "justification": "SQLAlchemy automatically sanitizes inputs and uses parameterized queries, preventing the SQL interpreter from treating input as code. The DB user has no DROP/ALTER permissions."
+        },
+        {
+            "id": "STRIDE-T-02",
+            "stride_category": "Tampering",
+            "title": "Man-in-the-Middle (MitM) Attack on API Traffic",
+            "description": "An attacker intercepts network traffic between the Client and Backend to modify scan requests or results.",
+            "component": "Network Layer",
+            "severity": "Critical",
+            "mitigation": "Unmitigated",
+            "status": "Mitigated",
+            "mitigation_strategy": "1. Enforce TLS 1.2+ (HTTPS) for all connections. 2. Use HSTS (HTTP Strict Transport Security).",
+            "justification": "TLS encrypts the transport layer, ensuring data integrity in transit. HSTS forces browsers to refuse unencrypted HTTP connections."
+        },
+        {
+            "id": "STRIDE-R-01",
+            "stride_category": "Repudiation",
+            "title": "Lack of Audit Trail for Admin Actions",
+            "description": "An admin deletes a user account, but there is no log proving who performed the action.",
+            "component": "Backend API",
+            "severity": "Medium",
+            "mitigation": "Unmitigated",
+            "status": "In Progress",
+            "mitigation_strategy": "1. Implement centralized logging key actions (Create, Update, Delete). 2. Logs must include Timestamp, Actor ID, and IP Address.",
+            "justification": "Action logging allows the system administrators to trace malicious or accidental changes back to a specific user session."
+        },
+        {
+            "id": "STRIDE-I-01",
+            "stride_category": "Information Disclosure",
+            "title": "Exposure of Database Credentials in Source Code",
+            "description": "Developers accidentally commit `.env` files or hardcode passwords in `config.py`.",
+            "component": "Source Code",
+            "severity": "High",
+            "mitigation": "Unmitigated",
+            "status": "Mitigated",
+            "mitigation_strategy": "1. Add `.env` to `.gitignore`. 2. Use GitHub Secrets for CI/CD. 3. Use SonarCloud to scan for secrets.",
+            "justification": "Source control is public/shared; credentials must be injected at runtime via environment variables to keep them secret from source viewers."
+        },
+        {
+            "id": "STRIDE-I-02",
+            "stride_category": "Information Disclosure",
+            "title": "Verbose Error Messages Leaking Stack Traces",
+            "description": "Production API returns full Python stack traces on 500 errors, revealing file paths and logic.",
+            "component": "Backend API",
+            "severity": "Medium",
+            "mitigation": "Unmitigated",
+            "status": "Mitigated",
+            "mitigation_strategy": "1. Global Exception Handler returns generic 'Internal Server Error' JSON. 2. Disable `DEBUG` mode in production.",
+            "justification": "Generic errors give attackers no internal knowledge, forcing them to fly blind."
+        },
+        {
+            "id": "STRIDE-D-01",
+            "stride_category": "Denial of Service",
+            "title": "Resource Exhaustion via Large Payloads",
+            "description": "Attacker sends 100MB email bodies to the scanner endpoint to crash the server memory.",
+            "component": "Scanner Engine",
+            "severity": "High",
+            "mitigation": "Unmitigated",
+            "status": "In Progress",
+            "mitigation_strategy": "1. Configure Nginx/Uvicorn `client_max_body_size` to 10MB. 2. Validate content length in API schema.",
+            "justification": "Hard limits at the ingress point drop malicious large packets before they consume application memory."
+        },
+        {
+            "id": "STRIDE-E-01",
+            "stride_category": "Elevation of Privilege",
+            "title": "Insecure Direct Object Reference (IDOR)",
+            "description": "User modifies the `user_id` in a URL to view another user's profile.",
+            "component": "Backend API",
+            "severity": "High",
+            "mitigation": "Unmitigated",
+            "status": "Mitigated",
+            "mitigation_strategy": "1. Middleware validates that `request.user.id` matches the `target_id` for private resources. 2. Use UUIDs instead of sequential integers.",
+            "justification": "Access controls must be enforced on the server-side for every request. UUIDs make guessing access IDs statistically impossible."
+        }
+    ]
+}
