@@ -271,11 +271,44 @@ The following checks were implemented and passed to ensure a robust deployment:
 SecureGuard/
 ├── backend/            # FastAPI source code & Dockerfile
 ├── frontend/           # Next.js source code & Dockerfile
+├── docs/               # System architecture & API documentation
+├── threat_model/       # Assignment: STRIDE Threat Model & HTML Report
+├── scripts/            # Developer tools & report generators
 ├── screenshots/        # UI screenshots & assets
 ├── docker-compose.yml  # Multi-container orchestration
 ├── sonar-project.properties # SonarCloud configuration
 └── README.md           # This file
 ```
+
+---
+
+## ⚖️ Compliance & Audit (Assignment)
+
+We maintain a rigorous security documentation standard following the **Microsoft SDL** and **STRIDE** methodology.
+
+- **Threat Model**: [threat_model/secureguard_report.html](threat_model/secureguard_report.html)
+- **Justification Rationale**: [threat_model/justification.md](threat_model/justification.md)
+- **Data Source**: [threat_model/secureguard.tm](threat_model/secureguard.tm)
+
+---
+
+## ⚖️ Compliance & Audit (Assignment)
+
+We maintain a rigorous security documentation standard following the **Microsoft SDL** and **STRIDE** methodology.
+
+- **Threat Model**: [threat_model/secureguard_report.html](threat_model/secureguard_report.html)
+- **Justification Rationale**: [threat_model/justification.md](threat_model/justification.md)
+- **Data Source**: [threat_model/secureguard.tm](threat_model/secureguard.tm)
+
+---
+
+## ⚖️ Compliance & Audit (Assignment)
+
+We maintain a rigorous security documentation standard following the **Microsoft SDL** and **STRIDE** methodology.
+
+- **Threat Model**: [threat_model/secureguard_report.html](threat_model/secureguard_report.html)
+- **Justification Rationale**: [threat_model/justification.md](threat_model/justification.md)
+- **Data Source**: [threat_model/secureguard.tm](threat_model/secureguard.tm)
 
 ---
 
