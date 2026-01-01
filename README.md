@@ -8,6 +8,92 @@ Designed for **visual excellence**, **high-speed performance**, and **Clean Arch
 
 ---
 
+## 🏗️ System Architecture
+
+This project follows a **Layered Clean Architecture** to ensure scalability, maintainability, and security.
+
+### High-Level Architecture
+```mermaid
+graph TD
+    User((User))
+    Browser[Web Browser / Client]
+    
+    subgraph "Docker Container: Frontend (Next.js)"
+        UI[UI Components]
+        NextServer[Next.js Server SSR]
+    end
+    
+    subgraph "Docker Container: Backend (FastAPI)"
+        API[API Router]
+        Auth[Auth Service]
+        Scanner[Phishing Scanner Engine]
+        RAG[RAG AI Assistant]
+        Payment[Payment Service]
+    end
+    
+    subgraph "Data & Infrastructure"
+        DB[(PostgreSQL DB)]
+        VectorDB[(Local Vector Store)]
+    end
+    
+    subgraph "External Services"
+        Stripe[Stripe API]
+        OpenAI[LLM Provider (Optional)]
+    end
+
+    User -->|HTTPS| Browser
+    Browser -->|React/Next.js| UI
+    UI -->|REST / WebSocket| API
+    
+    API --> Auth
+    API --> Scanner
+    API --> RAG
+    API --> Payment
+    
+    Auth --> DB
+    Scanner --> DB
+    Payment --> Stripe
+    Payment --> DB
+    
+    RAG --> VectorDB
+    RAG --> OpenAI
+```
+
+### Component Breakdown
+1.  **Frontend (Next.js 16 + React 19)**: Handles UI rendering, client-side routing, and connects to the backend via REST APIs and WebSockets. Hosted across `http://localhost:3000`.
+2.  **Backend (FastAPI + Python 3.11)**: The core logic hub.
+    -   **Auth**: JWT-based authentication.
+    -   **Scanner**: Asynchronous email analysis using `scikit-learn`.
+    -   **RAG**: Local vector search for security advisory.
+3.  **Database (PostgreSQL 15)**: Persistent storage for users, scan logs, and subscriptions.
+4.  **Orchestration**: Docker Compose manages the lifecycle of these services.
+
+---
+
+## 🛡️ Threat Modeling & Security Design
+
+To assist with **Threat Modeling** (STRIDE/DREAD), we clearly define trust boundaries and assets.
+
+### 1. Trust Boundaries
+*   **Boundary 1: Internet vs. Frontend**: The `Next.js` server exposes public endpoints. All inputs must be sanitized.
+*   **Boundary 2: Frontend vs. Backend**: Communications occur over HTTP/WebSocket. The Backend treats the Frontend as an untrusted client (validates all tokens and payloads).
+*   **Boundary 3: Backend vs. Database**: Secured via internal Docker network; credentials passed via environment variables.
+
+### 2. Data Assets & Sensitivity
+| Asset | Sensitivity | Storage | Protection |
+| :--- | :--- | :--- | :--- |
+| **User Credentials** | Critical | PostgreSQL (Users Table) | `bcrypt` Hashing |
+| **Auth Tokens** | High | Client (LocalStorage/Cookie) | JWT (Signed) |
+| **Phishing Reports** | Medium | PostgreSQL (Incidents) | Row-Level Access Control |
+| **Payment Info** | Critical | Stripe (External) | Never stored locally (Tokenized) |
+
+### 3. Key Security Controls
+-   **Input Validation**: Pydantic schemas enforce type and format constraints on all API ingress points.
+-   **Authentication**: OAuth2 with Password Flow (Bearer JWT).
+-   **Secrets Management**: All secrets (`JWT_SECRET`, `STRIPE_KEY`) are loaded from `.env` and never hardcoded.
+
+---
+
 ## 🚀 Quick Start (Dockerized)
 
 The fastest way to get SecureGuard running is using Docker. This starts the Frontend, Backend, and PostgreSQL database with a single command.
@@ -62,7 +148,7 @@ Stripe-integrated billing for seamless enterprise scaling.
 
 ---
 
-## 🏛️ Engineering & Architecture
+## 🏛️ Engineering & Architecture Details
 
 This project is built for scale and maintainability, strictly adhering to **SOLID principles** and **Layered Clean Architecture**.
 
