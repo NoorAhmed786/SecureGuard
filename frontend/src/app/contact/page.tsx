@@ -2,7 +2,7 @@
 
 import ThreeGlobe from '@/components/ThreeGlobe';
 import { motion } from 'framer-motion';
-import { Mail, Phone, MapPin, Send } from 'lucide-react';
+import { Mail, MapPin, Send } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ContactPage() {

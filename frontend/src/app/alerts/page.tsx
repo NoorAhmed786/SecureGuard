@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { ShieldAlert, AlertCircle, CheckCircle, Clock, Filter, Search, ChevronRight } from 'lucide-react';
+import { ShieldAlert, CheckCircle, Search, ChevronRight } from 'lucide-react';
 import ThreeGlobe from '@/components/ThreeGlobe';
 import { apiRequest } from '@/lib/api';
 
@@ -46,13 +45,6 @@ export default function AlertsPage() {
         return matchesFilter && matchesSearch;
     });
 
-    const getStatusIcon = (status: string) => {
-        const s = status.toLowerCase();
-        if (s.includes('pend')) return <Clock className="text-yellow-500" size={18} />;
-        if (s.includes('crit')) return <ShieldAlert className="text-purple-500" size={18} />;
-        if (s.includes('high') || s.includes('analyz') || s.includes('confirm')) return <ShieldAlert className="text-red-500" size={18} />;
-        return <CheckCircle className="text-emerald-500" size={18} />;
-    };
 
     const getLevelBadge = (level: string) => {
         const l = level?.toLowerCase() || 'low';

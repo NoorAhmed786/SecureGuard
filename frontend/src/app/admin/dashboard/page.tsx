@@ -1,12 +1,11 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
     Users,
     ShieldCheck,
     FileText,
-    Bell,
     BarChart3,
     MoreVertical,
     Mail,
@@ -17,7 +16,7 @@ import ThreeGlobe from '@/components/ThreeGlobe';
 
 export default function AdminDashboard() {
     const [isSimModalOpen, setIsSimModalOpen] = useState(false);
-    const [users, setUsers] = useState([
+    const [users] = useState([
         { id: 1, name: 'Alice Smith', email: 'alice@company.com', status: 'Active', progress: 85, lastSimulation: 'Pass' },
         { id: 2, name: 'Bob Johnson', email: 'bob@company.com', status: 'Active', progress: 40, lastSimulation: 'Fail' },
         { id: 3, name: 'Charlie Brown', email: 'charlie@company.com', status: 'Pending', progress: 0, lastSimulation: 'N/A' },

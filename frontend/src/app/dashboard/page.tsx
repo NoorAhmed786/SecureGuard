@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ShieldAlert, Activity, GraduationCap, TrendingUp, AlertTriangle, CheckCircle } from 'lucide-react';
+import { ShieldAlert, Activity, GraduationCap, TrendingUp, AlertTriangle } from 'lucide-react';
 import ThreeGlobe from '@/components/ThreeGlobe';
 import { apiRequest } from '@/lib/api';
 
@@ -28,7 +28,7 @@ export default function Dashboard() {
         security_score: 0,
         alerts: []
     });
-    const [isLoading, setIsLoading] = useState(true);
+    const [, setIsLoading] = useState(true);
 
     useEffect(() => {
         async function fetchStats() {
