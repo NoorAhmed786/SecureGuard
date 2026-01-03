@@ -61,10 +61,10 @@ export default function Dashboard() {
                 // Determine WebSocket protocol
                 const protocol = url.protocol === 'https:' ? 'wss:' : 'ws:';
 
-                // Use the same hostname used to access the page for local connections
-                // This ensures localhost vs 127.0.0.1 consistency
+                // Use 127.0.0.1 explicitly for local connections to avoid IPv6 (::1) issues
+                // where the backend might only be listening on IPv4.
                 const isLocal = url.hostname === 'localhost' || url.hostname === '127.0.0.1';
-                const wsHost = isLocal ? window.location.hostname : url.hostname;
+                const wsHost = isLocal ? '127.0.0.1' : url.hostname;
                 const wsPort = url.port || (url.protocol === 'https:' ? '443' : '8000');
 
                 const wsUrl = `${protocol}//${wsHost}:${wsPort}/ws/alerts`;
