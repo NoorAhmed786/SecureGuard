@@ -50,40 +50,64 @@ export default function Dashboard() {
         fetchStats();
 
         // Establish WebSocket connection for real-time alerts
-        const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-        const wsProtocol = apiBase.startsWith('https') ? 'wss:' : 'ws:';
+        let socket: WebSocket | null = null;
+        let reconnectTimeout: NodeJS.Timeout;
 
-        // Use the same hostname used to access the page for local connections
-        // This ensures localhost vs 127.0.0.1 consistency
-        const isLocal = apiBase.includes('localhost') || apiBase.includes('127.0.0.1');
-        const wsHostName = isLocal ? window.location.hostname : apiBase.replace(/^https?:\/\//, '').split(':')[0];
-        const wsPort = apiBase.split(':').pop() || '8000';
-
-        const wsUrl = `${wsProtocol}//${wsHostName}:${wsPort}/ws/alerts`;
-        console.log("Connecting to WebSocket:", wsUrl);
-        const socket = new WebSocket(wsUrl);
-
-        socket.onmessage = (event) => {
+        function connect() {
             try {
-                const newAlert = JSON.parse(event.data);
-                if (newAlert.type === 'phishing_alert') {
-                    setData(prev => ({
-                        ...prev,
-                        threats_detected: prev.threats_detected + 1,
-                        alerts: [newAlert, ...prev.alerts].slice(0, 10) // Keep latest 10
-                    }));
-                }
-            } catch (err) {
-                console.error("WebSocket message error:", err);
-            }
-        };
+                const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+                const url = new URL(apiBase);
 
-        socket.onerror = (err) => {
-            console.error("WebSocket error:", err);
-        };
+                // Determine WebSocket protocol
+                const protocol = url.protocol === 'https:' ? 'wss:' : 'ws:';
+
+                // Use the same hostname used to access the page for local connections
+                // This ensures localhost vs 127.0.0.1 consistency
+                const isLocal = url.hostname === 'localhost' || url.hostname === '127.0.0.1';
+                const wsHost = isLocal ? window.location.hostname : url.hostname;
+                const wsPort = url.port || (url.protocol === 'https:' ? '443' : '8000');
+
+                const wsUrl = `${protocol}//${wsHost}:${wsPort}/ws/alerts`;
+                console.log("Connecting to WebSocket:", wsUrl);
+
+                socket = new WebSocket(wsUrl);
+
+                socket.onmessage = (event) => {
+                    try {
+                        const newAlert = JSON.parse(event.data);
+                        if (newAlert.type === 'phishing_alert') {
+                            setData(prev => ({
+                                ...prev,
+                                threats_detected: prev.threats_detected + 1,
+                                alerts: [newAlert, ...prev.alerts].slice(0, 10) // Keep latest 10
+                            }));
+                        }
+                    } catch (err) {
+                        console.error("WebSocket message error:", err);
+                    }
+                };
+
+                socket.onerror = (err) => {
+                    console.error(`WebSocket error at ${wsUrl}:`, err);
+                };
+
+                socket.onclose = () => {
+                    console.log("WebSocket connection closed. Attempting to reconnect...");
+                    reconnectTimeout = setTimeout(connect, 3000);
+                };
+            } catch (err) {
+                console.error("Failed to construct WebSocket URL:", err);
+            }
+        }
+
+        connect();
 
         return () => {
-            socket.close();
+            if (socket) {
+                socket.onclose = null; // Prevent reconnection on intentional close
+                socket.close();
+            }
+            clearTimeout(reconnectTimeout);
         };
     }, []);
 
