@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Key, Code, Copy, CheckCircle, Plus, Trash2, Eye, EyeOff } from 'lucide-react';
 import { apiRequest } from '@/lib/api';
@@ -16,26 +16,23 @@ interface APIKey {
 
 export default function IntegrationPage() {
     const [apiKeys, setApiKeys] = useState<APIKey[]>([]);
-    const [loading, setLoading] = useState(true);
     const [newKeyName, setNewKeyName] = useState('');
     const [showNewKeyDialog, setShowNewKeyDialog] = useState(false);
     const [copiedKey, setCopiedKey] = useState('');
     const [revealedKeys, setRevealedKeys] = useState<Set<string>>(new Set());
 
-    useEffect(() => {
-        fetchAPIKeys();
-    }, []);
-
-    const fetchAPIKeys = async () => {
+    const fetchAPIKeys = useCallback(async () => {
         try {
             const data = await apiRequest('/api/v1/api-keys/list') as APIKey[];
             setApiKeys(data);
         } catch (error) {
             console.error('Failed to fetch API keys:', error);
-        } finally {
-            setLoading(false);
         }
-    };
+    }, [setApiKeys]);
+
+    useEffect(() => {
+        fetchAPIKeys();
+    }, [fetchAPIKeys]);
 
     const generateAPIKey = async () => {
         if (!newKeyName) return;

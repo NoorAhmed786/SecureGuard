@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 
-export default function TrainingModulePage({ params }: { params: { id: string } }) {
+export default function TrainingModulePage() {
     const [currentStep, setCurrentStep] = useState(0);
     const [quizAnswer, setQuizAnswer] = useState<number | null>(null);
     const [isWrong, setIsWrong] = useState(false);

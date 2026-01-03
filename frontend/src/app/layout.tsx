@@ -33,7 +33,7 @@ export default function RootLayout({
         setRole(decoded.role || 'user');
         setUserEmail(decoded.sub || null);
         setIsAuth(true);
-      } catch (e) {
+      } catch {
         localStorage.removeItem('token');
         setIsAuth(false);
       }

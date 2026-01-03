@@ -3,7 +3,7 @@
 import ThreeGlobe from '@/components/ThreeGlobe';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { Shield, Zap, Globe, Code, TrendingUp, Users, CheckCircle, ArrowRight, Eye } from 'lucide-react';
+import { Zap, ArrowRight, Eye } from 'lucide-react';
 
 export default function Home() {
   return (

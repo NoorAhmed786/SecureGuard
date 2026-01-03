@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { Play, CheckCircle2, Clock, Award, BookOpen } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function TrainingPage() {
     const courses = [
@@ -63,7 +64,13 @@ export default function TrainingPage() {
                         className="group bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden hover:border-blue-500/50 transition-all shadow-xl hover:shadow-blue-500/5"
                     >
                         <div className="h-48 overflow-hidden relative">
-                            <img src={course.image} alt={course.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                            <Image
+                                src={course.image}
+                                alt={course.title}
+                                width={800}
+                                height={450}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
                             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 to-transparent" />
                             <div className="absolute top-4 left-4">
                                 <span className="px-2 py-1 bg-blue-600 text-[10px] font-bold uppercase rounded text-white tracking-widest">{course.level}</span>

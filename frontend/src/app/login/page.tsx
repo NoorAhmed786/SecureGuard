@@ -48,7 +48,7 @@ export default function LoginPage() {
                     } else {
                         window.location.href = '/dashboard';
                     }
-                } catch (e) {
+                } catch {
                     const searchParams = new URLSearchParams(window.location.search);
                     const redirectPath = searchParams.get('redirect');
                     window.location.href = redirectPath || '/dashboard';

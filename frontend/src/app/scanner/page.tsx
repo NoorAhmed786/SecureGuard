@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldAlert, Search, AlertTriangle, Loader2, ArrowRight, Globe, Users, Activity, ExternalLink, ShieldCheck, AlertCircle, Target } from 'lucide-react';
 import ThreeGlobe from '@/components/ThreeGlobe';

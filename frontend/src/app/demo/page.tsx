@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Zap, Globe, MessageSquare, AlertCircle, CheckCircle, ArrowRight, X, Play, Loader2 } from 'lucide-react';
+import { Shield, Zap, Globe, MessageSquare, CheckCircle, Play } from 'lucide-react';
 import Link from 'next/link';
 import ThreeGlobe from '@/components/ThreeGlobe';
 
@@ -89,8 +89,8 @@ export default function DemoPage() {
                                     key={idx}
                                     onClick={() => { setActiveStep(idx); setDemoProgress(0); }}
                                     className={`w-full flex items-start gap-4 p-5 rounded-2xl border transition-all text-left ${activeStep === idx
-                                            ? 'bg-slate-900 border-blue-500/50 shadow-lg shadow-blue-500/10'
-                                            : 'bg-slate-900/30 border-slate-800 hover:border-slate-700'
+                                        ? 'bg-slate-900 border-blue-500/50 shadow-lg shadow-blue-500/10'
+                                        : 'bg-slate-900/30 border-slate-800 hover:border-slate-700'
                                         }`}
                                 >
                                     <div className={`p-3 rounded-xl ${step.bg} ${step.color}`}>

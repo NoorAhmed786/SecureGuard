@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Check, Shield, Zap, Target, Loader2 } from 'lucide-react';
+import { Check, Shield, Zap, Target } from 'lucide-react';
 import CheckoutButton from '@/components/CheckoutButton';
 import { apiRequest } from '@/lib/api';
 
