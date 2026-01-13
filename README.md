@@ -143,6 +143,9 @@ cd SecureGuard
 
 # Start the entire stack
 docker-compose up --build
+
+# (Optional) Seed the database & index the knowledge base
+docker exec -it secureguard_backend python scripts/seed.py
 ```
 > [!NOTE]
 > - **Frontend**: [http://localhost:3000](http://localhost:3000)
@@ -214,6 +217,9 @@ python -m venv venv
 pip install -r requirements.txt
 # Start the server
 python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+
+# (Required for first run) Seed the database
+python scripts/seed.py
 ```
 
 ### 2. Frontend Setup
@@ -225,6 +231,22 @@ npm run dev
 
 ---
 
+## 🧪 Testing & Reliability
+
+SecureGuard includes a robust testing suite to ensure stability during development.
+
+### Backend Tests
+We use `pytest` for unit and integration testing.
+```bash
+cd backend
+python -m pytest tests/
+```
+
+### CI/CD Integration
+All tests are automatically executed by GitHub Actions on every push to the `main` branch.
+
+---
+
 ## 🔄 CI/CD Pipeline
 
 The project uses **GitHub Actions** for continuous integration and delivery. The pipeline is defined in `.github/workflows/main.yml`.
@@ -232,10 +254,11 @@ The project uses **GitHub Actions** for continuous integration and delivery. The
 ### Workflow Stages
 1.  **Backend Quality**:
     - Installs Python dependencies.
-    - Runs `ruff` for fast linting and code quality checks.
+    - Runs `ruff` for fast linting.
+    - Runs `pytest` for automated business logic verification.
 2.  **Frontend Quality**:
     - Installs Node.js dependencies.
-    - Runs `npm run lint` (ESLint) to ensure type safety and code quality.
+    - Runs `npm run lint` (ESLint) to ensure type safety.
 3.  **Build & Publish**:
     - **Trigger**: Only on push to `main` branch.
     - Builds production-ready Docker images for Frontend and Backend.
@@ -260,9 +283,11 @@ The following checks were implemented and passed to ensure a robust deployment:
 | Component | Check Type | Tool | Command | Status |
 | :--- | :--- | :--- | :--- | :--- |
 | **Backend** | Linting & Style | `ruff` | `ruff check .` | ✅ Passed |
+| **Backend** | Unit Testing | `pytest` | `pytest tests/` | ✅ Passed |
 | **Frontend** | Static Analysis | `ESLint` | `npm run lint` | ✅ Passed |
 | **Frontend** | Compilation | `Next.js` | `npm run build` | ✅ Passed |
-| **Full Stack** | Security & Quality | `SonarCloud` | `Automatic Analysis` | ✅ Integrated |
+| **Build** | Orchestration | `Docker` | `docker-compose build` | ✅ Optimized |
+| **Cloud** | Security & Quality | `SonarCloud` | `Automatic Analysis` | ✅ Integrated |
 
 ---
 
@@ -270,11 +295,13 @@ The following checks were implemented and passed to ensure a robust deployment:
 ```text
 SecureGuard/
 ├── backend/            # FastAPI source code & Dockerfile
+│   ├── scripts/        # Backend-specific scripts (seeding, logic)
+│   └── tests/          # Automated test suite (pytest)
 ├── frontend/           # Next.js source code & Dockerfile
 ├── docs/               # System architecture & API documentation
 ├── threat_model/       # Assignment: STRIDE Threat Model & HTML Report
-├── scripts/            # Developer tools & report generators
-├── screenshots/        # UI screenshots & assets
+├── scripts/            # Global utility scripts
+├── screenshots/        # UI showcase assets
 ├── docker-compose.yml  # Multi-container orchestration
 ├── sonar-project.properties # SonarCloud configuration
 └── README.md           # This file
