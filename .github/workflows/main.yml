@@ -27,6 +27,11 @@ jobs:
         run: |
           cd backend
           ruff check .
+      - name: Run Tests
+        run: |
+          cd backend
+          pip install pytest pytest-asyncio
+          python -m pytest tests/
 
   test-frontend:
     runs-on: ubuntu-latest

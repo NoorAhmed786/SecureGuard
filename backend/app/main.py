@@ -8,6 +8,9 @@ import os
 # Load environment variables globally
 load_dotenv(os.path.join(os.path.dirname(__file__), "../.env"), override=True)
 
+from app.core.logging import setup_logging  # noqa: E402
+setup_logging()
+
 from app.application.use_cases.analyze_email import AnalyzeEmailUseCase  # noqa: E402
 from app.application.dependencies import (  # noqa: E402
     get_analyzer,
@@ -20,64 +23,15 @@ from app.infrastructure.database.repositories import SQLAlchemyIncidentRepositor
 
 app = FastAPI(title="AI Phishing Detection SaaS", version="1.0.0")
 
-# Ensure tables are created and seed admin
+# Ensure tables are created via scripts/seed.py or migrations
 @app.on_event("startup")
 async def startup():
-    from app.infrastructure.database.setup import engine, Base, get_db
-    from app.infrastructure.database.models import UserModel
-    from app.core.security import get_password_hash
-    import uuid
-    
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    
-    # Seed Vector Store from Knowledge Base
-    vector_store = get_vector_store()
-    try:
-        kb_path = os.path.join(os.path.dirname(__file__), "infrastructure/rag/knowledge_base.md")
-        if os.path.exists(kb_path):
-            with open(kb_path, "r", encoding="utf-8") as f:
-                content = f.read()
-            
-            # Split by ## headers
-            sections = content.split("##")
-            docs = []
-            from app.domain.entities.rag import KnowledgeBaseDocument
-            
-            for section in sections:
-                if section.strip():
-                    docs.append(KnowledgeBaseDocument(
-                        id=str(uuid.uuid4()),
-                        content=section.strip(),
-                        metadata={"source": "knowledge_base.md"}
-                    ))
-            
-            await vector_store.add_documents(docs)
-            print(f"Sucessfully indexed {len(docs)} knowledge base sections.")
-    except Exception as e:
-        print(f"RAG Indexing Error: {str(e)}")
-    
-    # Seed Admin User
-    async for db in get_db():
-        from sqlalchemy import select
-        result = await db.execute(select(UserModel).where(UserModel.email == "admin@secureguard.ai"))
-        admin = result.scalars().first()
-        
-        if not admin:
-            print("Seeding default admin user...")
-            admin_user = UserModel(
-                id=str(uuid.uuid4()),
-                email="admin@secureguard.ai",
-                full_name="System Administrator",
-                hashed_password=get_password_hash("admin123"),
-                role="admin"
-            )
-            db.add(admin_user)
-            await db.commit()
-        break
+    print("AI Phishing Detection SaaS Backend Started.")
+    # Tables and seeding are now handled by scripts/seed.py
+    pass
 
 # Include Routers
-from app.application.routers import auth, dashboard, payment, simulation, scanner, website_scanner, api_keys, widget_api  # noqa: E402
+from app.application.routers import auth, dashboard, payment, simulation, scanner, website_scanner, api_keys, widget_api, admin  # noqa: E402
 app.include_router(auth.router)
 app.include_router(dashboard.router)
 app.include_router(payment.router)
@@ -86,6 +40,7 @@ app.include_router(scanner.router)
 app.include_router(website_scanner.router)
 app.include_router(api_keys.router)
 app.include_router(widget_api.router)
+app.include_router(admin.router)
 
 from fastapi import WebSocket, WebSocketDisconnect  # noqa: E402
 
@@ -94,11 +49,16 @@ from fastapi import WebSocket, WebSocketDisconnect  # noqa: E402
 async def websocket_endpoint(websocket: WebSocket):
     manager = get_websocket_manager()
     await manager.connect(websocket)
+    print(f"WebSocket client connected: {websocket.client}")
     try:
         while True:
             await websocket.receive_text()  # Just keep alive
     except WebSocketDisconnect:
         manager.disconnect(websocket)
+        print("WebSocket client disconnected")
+    except Exception as e:
+        manager.disconnect(websocket)
+        print(f"WebSocket error: {e}")
 
 app.add_middleware(
     CORSMiddleware,

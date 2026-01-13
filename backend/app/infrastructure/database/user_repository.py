@@ -19,6 +19,10 @@ class UserRepository:
         result = await self.db.execute(select(User).where(User.email == email))
         return result.scalars().first()
 
+    async def get_all_users(self):
+        result = await self.db.execute(select(User).order_by(User.created_at.desc()))
+        return result.scalars().all()
+
     async def create_user(self, user: UserCreate):
         hashed_password = get_password_hash(user.password)
         db_user = User(

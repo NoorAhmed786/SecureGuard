@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { ShieldAlert, Activity, GraduationCap, TrendingUp, AlertTriangle } from 'lucide-react';
 import ThreeGlobe from '@/components/ThreeGlobe';
 import { apiRequest } from '@/lib/api';
+import { CONFIG } from '@/lib/config';
 
 interface Alert {
     id: string | number;
@@ -55,20 +56,9 @@ export default function Dashboard() {
 
         function connect() {
             try {
-                const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-                const url = new URL(apiBase);
+                const wsUrl = CONFIG.WS_URL;
 
-                // Determine WebSocket protocol
-                const protocol = url.protocol === 'https:' ? 'wss:' : 'ws:';
-
-                // Use 127.0.0.1 explicitly for local connections to avoid IPv6 (::1) issues
-                // where the backend might only be listening on IPv4.
-                const isLocal = url.hostname === 'localhost' || url.hostname === '127.0.0.1';
-                const wsHost = isLocal ? '127.0.0.1' : url.hostname;
-                const wsPort = url.port || (url.protocol === 'https:' ? '443' : '8000');
-
-                const wsUrl = `${protocol}//${wsHost}:${wsPort}/ws/alerts`;
-                console.log("Connecting to WebSocket:", wsUrl);
+                console.log("🚀 Attempting WebSocket connection to:", wsUrl);
 
                 socket = new WebSocket(wsUrl);
 

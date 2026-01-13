@@ -46,5 +46,14 @@ class SQLAlchemyIncidentRepository(IIncidentRepository):
         await self.session.commit()
         return incident
     
-    async def list_by_user(self, user_id: str) -> List[PhishingIncident]:
-        return []
+    async def list_by_user(self, user_id: str) -> List[IncidentModel]:
+        result = await self.session.execute(
+            select(IncidentModel).where(IncidentModel.user_id == user_id).order_by(IncidentModel.detected_at.desc())
+        )
+        return result.scalars().all()
+
+    async def get_all_incidents(self) -> List[IncidentModel]:
+        result = await self.session.execute(
+            select(IncidentModel).order_by(IncidentModel.detected_at.desc())
+        )
+        return result.scalars().all()

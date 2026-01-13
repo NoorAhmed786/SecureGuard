@@ -38,14 +38,16 @@ class PhishingIncident(BaseModel):
     def mark_as_analyzed(self, score: float, report: Dict[str, Any]):
         self.confidence_score = score
         self.analysis_report = report
-        self.status = IncidentStatus.ANALYZING
+        
         if score > 0.8:
             self.threat_level = ThreatLevel.CRITICAL
             self.status = IncidentStatus.CONFIRMED_PHISHING
         elif score > 0.5:
-             self.threat_level = ThreatLevel.HIGH
+            self.threat_level = ThreatLevel.HIGH
+            self.status = IncidentStatus.CONFIRMED_PHISHING
         elif score > 0.2:
-             self.threat_level = ThreatLevel.MEDIUM
+            self.threat_level = ThreatLevel.MEDIUM
+            self.status = IncidentStatus.SAFE
         else:
-             self.threat_level = ThreatLevel.LOW
-             self.status = IncidentStatus.SAFE
+            self.threat_level = ThreatLevel.LOW
+            self.status = IncidentStatus.SAFE
