@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
 from app.application.use_cases.analyze_email import AnalyzeEmailUseCase
 from app.domain.entities.phishing import PhishingIncident, ThreatLevel, IncidentStatus
 

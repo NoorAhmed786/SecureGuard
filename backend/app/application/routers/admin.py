@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Dict, Any
@@ -7,7 +7,7 @@ from app.infrastructure.database.setup import get_db
 from app.infrastructure.database.user_repository import UserRepository, UserCreate
 from app.infrastructure.database.models import UserModel, IncidentModel
 
-from app.infrastructure.database.repositories import SQLAlchemyIncidentRepository
+
 
 router = APIRouter(prefix="/api/v1/admin", tags=["admin"])
 
@@ -18,8 +18,7 @@ async def get_users(db: AsyncSession = Depends(get_db)):
     
     # Get alert counts per user
     results = []
-    from sqlalchemy import func
-    from app.infrastructure.database.models import IncidentModel
+    
     
     for user in users:
         alert_count_result = await db.execute(

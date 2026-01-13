@@ -6,7 +6,6 @@ import {
     Users,
     ShieldCheck,
     FileText,
-    BarChart3,
     MoreVertical,
     Mail,
     UserPlus,
@@ -103,8 +102,12 @@ export default function AdminDashboard() {
             await fetchAllData();
             setIsAddUserModalOpen(false);
             setFormData({ email: '', password: '', full_name: '', role: 'user' });
-        } catch (err: any) {
-            alert(err.message);
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                alert(err.message);
+            } else {
+                alert('An unexpected error occurred');
+            }
         } finally {
             setIsSubmitting(false);
         }
@@ -133,7 +136,7 @@ export default function AdminDashboard() {
             <header className="flex justify-between items-center relative z-10">
                 <div>
                     <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
-                    <p className="text-slate-400 mt-2">Manage your organization's users and security alerts.</p>
+                    <p className="text-slate-400 mt-2">Manage your organization&apos;s users and security alerts.</p>
                 </div>
                 <div className="flex gap-4">
                     <button
