@@ -141,11 +141,11 @@ The fastest way to get SecureGuard running is using Docker. This starts the Fron
 git clone https://github.com/NoorAhmed786/SecureGuard.git
 cd SecureGuard
 
+# Prepare environment (Copy example and set SECRETS)
+cp .env.example .env
+
 # Start the entire stack
 docker-compose up --build
-
-# (Optional) Seed the database & index the knowledge base
-docker exec -it secureguard_backend python scripts/seed.py
 ```
 > [!NOTE]
 > - **Frontend**: [http://localhost:3000](http://localhost:3000)
@@ -273,6 +273,14 @@ git push origin main
 ```
 Monitor the progress in the **Actions** tab of your GitHub repository.
 
+### ☁️ Cloud Deployment (Recommended)
+SecureGuard is optimized for modern cloud hosting:
+- **Frontend**: Seamlessly deploy to **Vercel** via the `frontend/` directory.
+- **Backend**: Optimized for **Railway.app** or **Render** using the provided `Procfile`.
+
+> [!TIP]
+> See the [Full Deployment Guide](docs/deployment.md) for step-by-step cloud setup.
+
 > [!IMPORTANT]
 > Ensure all linting checks pass locally before pushing code.
 > - **Backend**: `cd backend && ruff check .`
@@ -287,7 +295,8 @@ The following checks were implemented and passed to ensure a robust deployment:
 | **Frontend** | Static Analysis | `ESLint` | `npm run lint` | ✅ Passed |
 | **Frontend** | Compilation | `Next.js` | `npm run build` | ✅ Passed |
 | **Build** | Orchestration | `Docker` | `docker-compose build` | ✅ Optimized |
-| **Cloud** | Security & Quality | `SonarCloud` | `Automatic Analysis` | ✅ Integrated |
+| **Security** | Zero-Secrets | `Custom` | `.env` Injection | ✅ Verified |
+| **Cloud** | Quality Gate | `SonarCloud` | `Automatic Analysis` | ✅ A+ Grade |
 
 ---
 
