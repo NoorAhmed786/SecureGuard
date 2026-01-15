@@ -2,6 +2,7 @@ import asyncio
 import os
 import sys
 import uuid
+import aiofiles
 from sqlalchemy import select
 from dotenv import load_dotenv
 
@@ -56,8 +57,8 @@ async def seed_database():
         kb_path = os.path.join(os.path.dirname(__file__), "../app/infrastructure/rag/knowledge_base.md")
         print(f"Checking for knowledge base at: {kb_path}")
         if os.path.exists(kb_path):
-            with open(kb_path, "r", encoding="utf-8") as f:
-                content = f.read()
+            async with aiofiles.open(kb_path, mode="r", encoding="utf-8") as f:
+                content = await f.read()
             
             # Split by ## headers
             sections = content.split("##")
