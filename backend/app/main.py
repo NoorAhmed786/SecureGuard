@@ -60,14 +60,22 @@ async def websocket_endpoint(websocket: WebSocket):
         manager.disconnect(websocket)
         print(f"WebSocket error: {e}")
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
+# CORS Configuration
+allowed_origins_env = os.getenv("ALLOWED_ORIGINS", "")
+if allowed_origins_env:
+    origins = [origin.strip() for origin in allowed_origins_env.split(",")]
+else:
+    # Default for local development
+    origins = [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
         "http://localhost:3001",
         "http://127.0.0.1:3001",
-    ],
+    ]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

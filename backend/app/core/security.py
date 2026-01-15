@@ -13,9 +13,7 @@ load_dotenv(os.path.join(os.path.dirname(__file__), "../../.env"))
 # Configuration
 SECRET_KEY = os.getenv("SECRET_KEY")
 if not SECRET_KEY:
-    # Fallback for local development ONLY
-    SECRET_KEY = "fallback-secret-for-dev-only"
-    print("WARNING: SECRET_KEY not found in env, using unsafe fallback!")
+    raise RuntimeError("SECRET_KEY not found in environment. The application cannot start in an insecure state.")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 

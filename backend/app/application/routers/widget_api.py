@@ -12,11 +12,13 @@ from app.infrastructure.threat_intel.google_safe_browsing import GoogleSafeBrows
 from app.infrastructure.ai.classifier import classifier
 from datetime import datetime
 import uuid
+import os
 
 router = APIRouter(prefix="/api/v1/widget", tags=["widget"])
 
 # Initialize threat provider
-threat_provider = GoogleSafeBrowsingProvider(api_key="mock")
+GOOGLE_SAFE_BROWSING_API_KEY = os.getenv("GOOGLE_SAFE_BROWSING_API_KEY", "mock")
+threat_provider = GoogleSafeBrowsingProvider(api_key=GOOGLE_SAFE_BROWSING_API_KEY)
 
 class URLCheckRequest(BaseModel):
     url: str
@@ -109,8 +111,10 @@ async def check_url(
         )
     
     except Exception as e:
-        print(f"Widget URL check error: {e}")
-        raise HTTPException(status_code=500, detail="URL check failed")
+        # Avoid leaking full exception details in production
+        from app.core.logging import logger
+        logger.error(f"Widget URL check error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal security analysis failed")
 
 @router.get("/analytics")
 async def get_widget_analytics(

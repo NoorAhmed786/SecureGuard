@@ -84,8 +84,9 @@ export default function IntegrationPage() {
     };
 
     const getWidgetCode = (apiKey: string) => {
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
         return `<!-- SecureGuard Phishing Protection Widget -->
-<script src="http://localhost:3000/widget.js" 
+<script src="${baseUrl}/widget.js" 
         data-api-key="${apiKey}">
 </script>`;
     };
