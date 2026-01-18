@@ -6,3 +6,6 @@ venv/
 secureguard.db
 tests/
 .pytest_cache/
+.git
+.gitignore
+*.log

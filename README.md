@@ -128,7 +128,39 @@ flowchart TB
 
 ---
 
-## 🚀 Quick Start (Dockerized)
+## � Security Improvements & Hardening
+
+SecureGuard follows security best practices and has been hardened against common vulnerabilities.
+
+### Dockerfile Security
+To prevent sensitive data from being inadvertently copied into Docker images, we've implemented comprehensive `.dockerignore` files for both backend and frontend:
+
+#### Backend Protection
+- Excludes `.env` files containing secrets
+- Excludes database files (`secureguard.db`)
+- Excludes version control metadata (`.git`, `.gitignore`)
+- Excludes log files and Python cache
+
+#### Frontend Protection
+- Excludes environment files (`.env`, `.env.local`)
+- Excludes build artifacts and dependencies
+- Excludes version control and documentation files
+
+### Code Quality & Security Analysis
+The project is continuously monitored by **SonarCloud** for security vulnerabilities, code smells, and quality issues.
+
+![SonarCloud Analysis](screenshots/sonarcube-issues.png)
+*Comprehensive security and quality analysis*
+
+![Security Hotspots](screenshots/sonarcube-issue.png)
+*Resolved security hotspots and vulnerabilities*
+
+> [!IMPORTANT]
+> All identified security hotspots have been reviewed and resolved. The `.dockerignore` files ensure that `COPY` commands in Dockerfiles never include sensitive data.
+
+---
+
+## �🚀 Quick Start (Dockerized)
 
 The fastest way to get SecureGuard running is using Docker. This starts the Frontend, Backend, and PostgreSQL database with a single command.
 
@@ -159,6 +191,10 @@ docker-compose up --build
 A premium dashboard providing real-time metrics, threat visualizations, and actionable insights.
 ![Dashboard](screenshots/dashboard.png)
 
+### 👨‍💼 Admin Dashboard
+Comprehensive administrative control panel for managing users, subscriptions, and system settings.
+![Admin Dashboard](screenshots/admin.png)
+
 ### 🛡️ Unified Security Scanner
 Analyze suspicious emails for phishing and scan public-facing websites for vulnerabilities.
 ![Scanner](screenshots/scanner.png)
@@ -182,6 +218,15 @@ Lightweight JavaScript snippet to protect client websites at the edge.
 ### 💳 Subscription & Payments
 Stripe-integrated billing for seamless enterprise scaling.
 ![Payment](screenshots/payment.png)
+
+### 🐳 Docker Deployment
+Fully containerized deployment with Docker Compose for easy orchestration.
+
+![Docker Desktop](screenshots/docker-desktop.png)
+*Running containers in Docker Desktop*
+
+![Docker Build Success](screenshots/docker build succesfull.png)
+*Successful multi-stage Docker build*
 
 ---
 
