@@ -59,9 +59,16 @@ async def check_ssl(domain: str) -> Dict[str, Any]:
 async def run_scan(request: ScanRequest):
     from urllib.parse import urlparse
     
-    # Ensure URL scheme for parsing
+    # SECURITY: Always enforce HTTPS for security scanning
+    # We normalize user input to HTTPS to ensure secure connections
     target_url = request.url.strip()
-    if not target_url.startswith(('https://', 'http://')):
+    
+    # Remove any existing scheme and enforce HTTPS
+    if target_url.startswith('http://'):
+        # Replace insecure HTTP with HTTPS
+        target_url = target_url.replace('http://', 'https://', 1)
+    elif not target_url.startswith('https://'):
+        # Add HTTPS if no scheme provided
         target_url = f"https://{target_url}"
         
     parsed = urlparse(target_url)

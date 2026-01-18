@@ -26,7 +26,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy installed packages from builder
 COPY --from=builder /install /usr/local
 
-# Copy application code
+# SECURITY: Copy application code
+# Protected by .dockerignore which excludes sensitive files (.env, .git, logs, database)
 COPY . .
 
 # Environment variables

@@ -31,8 +31,13 @@ class SecurityScanner:
             "checks": {}
         }
         
-        # Normalize URL
-        if not url.startswith(('https://', 'http://')):
+        # SECURITY: Always enforce HTTPS for security scanning
+        # We normalize user input to HTTPS to ensure secure connections
+        if url.startswith('http://'):
+            # Replace insecure HTTP with HTTPS
+            url = url.replace('http://', 'https://', 1)
+        elif not url.startswith('https://'):
+            # Add HTTPS if no scheme provided
             url = 'https://' + url
         
         parsed = urlparse(url)

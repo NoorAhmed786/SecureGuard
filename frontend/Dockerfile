@@ -4,6 +4,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
+# SECURITY: Glob pattern is safe - only matches package-lock.json variants
 COPY package.json package-lock.json* ./
 RUN npm install
 
@@ -11,6 +12,8 @@ RUN npm install
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
+# SECURITY: Copy application code
+# Protected by .dockerignore which excludes sensitive files (.env, .git, node_modules, etc.)
 COPY . .
 
 # Pass build arguments for environment variables
