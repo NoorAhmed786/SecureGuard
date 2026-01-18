@@ -59,24 +59,34 @@ async def verify_api_key(
     
     return api_key
 
+from app.application.dependencies import get_websocket_manager
+
 @router.post("/check-url", response_model=URLCheckResponse)
 async def check_url(
     request: URLCheckRequest,
     db: AsyncSession = Depends(get_db),
-    api_key: APIKeyModel = Depends(verify_api_key)
+    api_key: APIKeyModel = Depends(verify_api_key),
+    manager = Depends(get_websocket_manager)
 ):
     """
     Check if a URL is safe (public endpoint for widget)
     Requires API key authentication
     """
+    import asyncio
+    from app.core.logging import logger
+
     try:
         url = request.url
+        logger.info(f"Checking URL: {url}")
         
         # 1. Check with threat intelligence
         threat_check = await threat_provider.check_url(url)
+        logger.info(f"Threat check result: {threat_check}")
         
-        # 2. Use AI classifier for additional analysis
-        ai_score = classifier.predict_score(f"URL: {url}")
+        # 2. Use AI classifier for additional analysis (in thread pool to avoid blocking)
+        loop = asyncio.get_event_loop()
+        ai_score = await loop.run_in_executor(None, classifier.predict_score, f"URL: {url}")
+        logger.info(f"AI score: {ai_score}")
         
         # Combine scores
         is_threat = not threat_check["safe"] or ai_score > 0.7
@@ -102,6 +112,12 @@ async def check_url(
         )
         db.add(event)
         await db.commit()
+        
+        # BROADCAST ALERT IF THREAT DETECTED
+        if is_threat:
+            print(f"Broadcasting threat alert for {url}")
+            alert_message = f"New Threat Detected: {threat_type.upper()} attempt blocked from {url} (Score: {threat_score:.2f})"
+            await manager.broadcast(alert_message)
         
         return URLCheckResponse(
             is_safe=not is_threat,
