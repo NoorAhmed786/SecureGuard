@@ -38,9 +38,10 @@ async def create_checkout_session(
         raise HTTPException(status_code=400, detail=f"Invalid plan ID: {plan_id}")
 
     try:
-        # Hardcoded for local dev, should come from config/env in production
-        success_url = "http://localhost:3000/dashboard?session_id={CHECKOUT_SESSION_ID}"
-        cancel_url = "http://localhost:3000/pricing"
+        # Use NEXT_PUBLIC_BASE_URL from env, default to local
+        base_url = os.getenv("NEXT_PUBLIC_BASE_URL", "http://localhost:3000")
+        success_url = f"{base_url}/dashboard?session_id={{CHECKOUT_SESSION_ID}}"
+        cancel_url = f"{base_url}/pricing"
         
         # We'll use a demo user ID for now
         session = await payment_gateway.create_checkout_session(

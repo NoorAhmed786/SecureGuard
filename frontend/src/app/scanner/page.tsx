@@ -77,7 +77,11 @@ export default function ScannerPage() {
         try {
             // Visual feedback
             const progressInterval = setInterval(() => {
-                setProgress(prev => Math.min(prev + (Math.random() * 10), 90));
+                setProgress(prev => {
+                    const array = new Uint32Array(1);
+                    const randomVal = window.crypto.getRandomValues(array)[0] / 4294967295;
+                    return Math.min(prev + (randomVal * 10), 90);
+                });
             }, 300);
 
             if (scanMode === 'email') {

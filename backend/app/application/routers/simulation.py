@@ -14,12 +14,12 @@ async def blast_simulation(template_id: str, target_users: list[str], db: AsyncS
     templates = {
         "password_reset": {
             "subject": "Urgent: Password Reset Required",
-            "body": "Your account has been compromised. Please reset your password at http://secureguard-verify.net/reset",
+            "body": "Your account has been compromised. Please reset your password at https://secureguard-verify.net/reset",
             "sender": "security-alerts@secureguard.ai"
         },
         "payment_failure": {
             "subject": "Action Required: Payment Method Failed",
-            "body": "We could not process your last payment. Please update your billing info at http://secureguard-billing.net/update",
+            "body": "We could not process your last payment. Please update your billing info at https://secureguard-billing.net/update",
             "sender": "billing@secureguard.ai"
         }
     }
@@ -37,7 +37,7 @@ async def blast_simulation(template_id: str, target_users: list[str], db: AsyncS
             sender_email=template["sender"],
             subject=template["subject"],
             raw_email_content=template["body"],
-            urls_found=["http://simulation-link.test"],
+            urls_found=["https://simulation-link.test"],
             status=IncidentStatus.PENDING,
             threat_level=ThreatLevel.HIGH, # Simulations are always "threats" for training
             created_at=datetime.now(timezone.utc)

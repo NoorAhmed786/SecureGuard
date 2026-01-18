@@ -57,8 +57,16 @@ async def check_ssl(domain: str) -> Dict[str, Any]:
 
 @router.post("/scan", response_model=ScanResponse)
 async def run_scan(request: ScanRequest):
-    url = request.url.replace("https://", "").replace("http://", "").split("/")[0]
-    domain = url
+    from urllib.parse import urlparse
+    
+    # Ensure URL scheme for parsing
+    target_url = request.url.strip()
+    if not target_url.startswith(('https://', 'http://')):
+        target_url = f"https://{target_url}"
+        
+    parsed = urlparse(target_url)
+    domain = parsed.netloc or parsed.path  # fallback if no scheme
+    domain = domain.split(':')[0] # Remove port if present
 
     findings = []
     score = 100

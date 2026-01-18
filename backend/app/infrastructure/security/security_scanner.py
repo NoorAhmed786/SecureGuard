@@ -32,7 +32,7 @@ class SecurityScanner:
         }
         
         # Normalize URL
-        if not url.startswith(('http://', 'https://')):
+        if not url.startswith(('https://', 'http://')):
             url = 'https://' + url
         
         parsed = urlparse(url)

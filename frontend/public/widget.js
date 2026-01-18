@@ -8,7 +8,9 @@
     // Get API key from script tag
     const scriptTag = document.currentScript || document.querySelector('script[data-api-key]');
     const API_KEY = scriptTag ? scriptTag.getAttribute('data-api-key') : null;
-    const API_URL = 'http://localhost:8000/api/v1/widget';
+    // Use HTTPS if served over HTTPS, otherwise fallback to local dev default
+    const protocol = window.location.protocol === 'https:' ? 'https:' : 'http:';
+    const API_URL = `${protocol}//localhost:8000/api/v1/widget`; // TODO: In prod, this should point to api.secureguard.ai
 
     if (!API_KEY) {
         console.error('SecureGuard: No API key provided');

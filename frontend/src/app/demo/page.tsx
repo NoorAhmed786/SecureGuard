@@ -45,7 +45,9 @@ export default function DemoPage() {
                     setIsSimulating(false);
                     return 100;
                 }
-                const diff = Math.random() * 15;
+                const array = new Uint32Array(1);
+                const randomVal = window.crypto.getRandomValues(array)[0] / 4294967295;
+                const diff = randomVal * 15;
                 return Math.min(oldProgress + diff, 100);
             });
         }, 500);
