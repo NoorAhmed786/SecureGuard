@@ -13,6 +13,7 @@ from app.infrastructure.ai.classifier import classifier
 from datetime import datetime
 import uuid
 import os
+from app.application.dependencies import get_websocket_manager
 
 router = APIRouter(prefix="/api/v1/widget", tags=["widget"])
 
@@ -59,7 +60,7 @@ async def verify_api_key(
     
     return api_key
 
-from app.application.dependencies import get_websocket_manager
+
 
 @router.post("/check-url", response_model=URLCheckResponse)
 async def check_url(
