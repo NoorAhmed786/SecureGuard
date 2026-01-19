@@ -16,7 +16,8 @@ from app.application.dependencies import (  # noqa: E402
     get_analyzer,
     get_payment_gateway,
     get_vector_store,
-    get_websocket_manager
+    get_websocket_manager,
+    initialize_rag
 )
 from app.infrastructure.database.setup import get_db  # noqa: E402
 from app.infrastructure.database.repositories import SQLAlchemyIncidentRepository  # noqa: E402
@@ -33,6 +34,9 @@ async def startup():
         print("🔗 Syncing database tables...")
         await conn.run_sync(Base.metadata.create_all)
     print("✅ Database sync complete.")
+    
+    # Initialize RAG Knowledge Base
+    await initialize_rag()
 
 # Include Routers
 from app.application.routers import auth, dashboard, payment, simulation, scanner, website_scanner, api_keys, widget_api, admin  # noqa: E402
@@ -128,6 +132,14 @@ async def ask_agent(request: AskRequest):
     """
     vector_store = get_vector_store()
     try:
+        # 0. Safety Check
+        sensitive_keywords = ["SECRET_KEY", "PASSWORD", "DATABASE_URL", "STRIPE_SECRET", "OPENAI_API_KEY", "JWT_SECRET"]
+        if any(key.lower() in request.query.lower() for key in sensitive_keywords):
+            return {
+                "answer": "I'm sorry, I cannot provide sensitive system information or credentials. As a security assistant, my goal is to protect your data, not expose it.",
+                "sources": ["Safety Filter"]
+            }
+
         # 1. Retrieve most relevant context
         results = await vector_store.search(request.query, top_k=1)
         

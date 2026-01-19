@@ -223,6 +223,24 @@ Sharing sensitive data in chats or unencrypted channels creates a "security foot
 
 ---
 
+## Technical Architecture & Security
+SecureGuard is built with a focus on security-first design principles.
+
+### Datastores
+- **PostgreSQL**: Stores user profiles, incident metadata, and simulation results with encryption at rest.
+- **SimpleVectorStore**: An in-memory vector store used for real-time RAG (Retrieval-Augmented Generation) to power this assistant. This ensures rapid response times without compromising sensitive data persistence.
+
+### API Integrity
+- **JWT Authentication**: All dashboard and administrative APIs are protected by JSON Web Tokens.
+- **API Key Scoping**: Keys generated for the embeddable widget are restricted to read-only threat intelligence access.
+- **CORS Policies**: Strict Cross-Origin Resource Sharing (CORS) policies prevent unauthorized domains from accessing SecureGuard's internal APIs.
+
+### Backend Infrastructure
+- **Python/FastAPI**: Asynchronous backend for high-performance scanning.
+- **Dockerized Environment**: Containerized services ensure isolation and consistent security posture across development and production.
+
+---
+
 ## Subscription Plans
 
 ### Free Plan

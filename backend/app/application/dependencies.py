@@ -13,6 +13,9 @@ from app.infrastructure.payment.stripe_adapter import StripeAdapter
 from app.infrastructure.rag.simple_vector_store import SimpleVectorStore
 from app.infrastructure.rag.openai_provider import OpenAILLMProvider
 from app.infrastructure.websocket.connection_manager import ConnectionManager
+import aiofiles
+import uuid
+from app.domain.entities.rag import KnowledgeBaseDocument
 
 
 # Singleton instances (created once and reused)
@@ -122,3 +125,41 @@ def get_websocket_manager() -> ConnectionManager:
     if _websocket_manager is None:
         _websocket_manager = ConnectionManager()
     return _websocket_manager
+
+
+async def initialize_rag():
+    """
+    Initialize the RAG vector store by loading the knowledge base.
+    """
+    print("🚀 Initializing RAG Knowledge Base...")
+    vector_store = get_vector_store()
+    
+    # Avoid double initialization if docs already exist
+    if vector_store.documents:
+        print("RAG already initialized.")
+        return
+
+    try:
+        kb_path = os.path.join(os.path.dirname(__file__), "../infrastructure/rag/knowledge_base.md")
+        if os.path.exists(kb_path):
+            async with aiofiles.open(kb_path, mode="r", encoding="utf-8") as f:
+                content = await f.read()
+            
+            # Split by ## headers
+            sections = content.split("##")
+            docs = []
+            
+            for section in sections:
+                if section.strip():
+                    docs.append(KnowledgeBaseDocument(
+                        id=str(uuid.uuid4()),
+                        content=section.strip(),
+                        metadata={"source": "knowledge_base.md"}
+                    ))
+            
+            await vector_store.add_documents(docs)
+            print(f"✅ RAG Initialized with {len(docs)} documents.")
+        else:
+            print(f"⚠️ Knowledge base file not found at {kb_path}")
+    except Exception as e:
+        print(f"❌ RAG Initialization Error: {str(e)}")
