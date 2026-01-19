@@ -40,7 +40,7 @@ async def blast_simulation(template_id: str, target_users: list[str], db: AsyncS
             urls_found=["https://simulation-link.test"],
             status=IncidentStatus.PENDING,
             threat_level=ThreatLevel.HIGH, # Simulations are always "threats" for training
-            created_at=datetime.now(timezone.utc)
+            detected_at=datetime.now(timezone.utc).replace(tzinfo=None)
         )
         db.add(incident)
         created_count += 1

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useState, useEffect, Component, ErrorInfo, ReactNode } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Sphere, Stars, PerspectiveCamera } from '@react-three/drei';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
@@ -78,10 +78,84 @@ const ThreatMarker = ({ position, color }: { position: [number, number, number],
   )
 }
 
-export default function ThreeGlobe() {
+// Fallback component when WebGL fails
+const GlobeFallback = () => {
   return (
     <div className="w-full h-full absolute inset-0 -z-10 overflow-hidden pointer-events-none">
-      <Canvas camera={{ position: [0, 0, 8], fov: 40 }}>
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-blue-950/20 to-slate-950">
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full border-2 border-blue-500/30 animate-pulse" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full border border-blue-400/20 animate-ping" style={{ animationDuration: '3s' }} />
+        </div>
+      </div>
+      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-slate-950 pointer-events-none" />
+    </div>
+  );
+};
+
+// Error boundary to catch WebGL errors
+class WebGLErrorBoundary extends Component<
+  { children: ReactNode; fallback: ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: ReactNode; fallback: ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(_: Error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    // Suppress WebGL errors in console
+    if (error.message.includes('WebGL')) {
+      console.log('WebGL not available, using fallback visualization');
+    }
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+
+    return this.props.children;
+  }
+}
+
+function ThreeGlobeContent() {
+  const [hasWebGLError, setHasWebGLError] = useState(false);
+
+  useEffect(() => {
+    // Check if WebGL is available
+    try {
+      const canvas = document.createElement('canvas');
+      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      if (!gl) {
+        setHasWebGLError(true);
+      }
+    } catch (e) {
+      setHasWebGLError(true);
+    }
+  }, []);
+
+  // Use fallback if WebGL error detected
+  if (hasWebGLError) {
+    return <GlobeFallback />;
+  }
+
+  return (
+    <div className="w-full h-full absolute inset-0 -z-10 overflow-hidden pointer-events-none">
+      <Canvas
+        camera={{ position: [0, 0, 8], fov: 40 }}
+        onCreated={(state) => {
+          // Handle context loss
+          state.gl.domElement.addEventListener('webglcontextlost', (event) => {
+            event.preventDefault();
+            setHasWebGLError(true);
+          });
+        }}
+      >
         <PerspectiveCamera makeDefault position={[0, 0, 8]} />
         <ambientLight intensity={0.2} />
         <pointLight position={[10, 10, 10]} intensity={1.5} />
@@ -111,5 +185,13 @@ export default function ThreeGlobe() {
       </Canvas>
       <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-slate-950 pointer-events-none" />
     </div>
+  );
+}
+
+export default function ThreeGlobe() {
+  return (
+    <WebGLErrorBoundary fallback={<GlobeFallback />}>
+      <ThreeGlobeContent />
+    </WebGLErrorBoundary>
   );
 }

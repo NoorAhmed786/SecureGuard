@@ -100,7 +100,22 @@ To make cybersecurity accessible and effective for organizations of all sizes by
 - "How do I scan a website for vulnerabilities?"
 - "How do I integrate the widget on my site?"
 
-### 6. Real-time Dashboard
+### 6. One-Click Remediation (Admin Broadcast)
+**What it does:** Allows administrators to instantly warn the entire organization about a specific, high-risk threat.
+
+**How to use:**
+1. Log in as an **Admin**.
+2. Navigate to "Real-time Phishing Alerts" on the Dashboard.
+3. Find an alert marked as **High** or **Critical**.
+4. Click the **"Broadcast Warning to Team"** button.
+5. All connected users will immediately see a red emergency banner at the top of their screen.
+
+**Benefits:**
+- Rapid response to active phishing campaigns.
+- Organization-wide visibility within seconds.
+- Reduces the "window of opportunity" for attackers.
+
+### 7. Real-time Dashboard
 **What it does:** Provides a comprehensive overview of your organization's security status.
 
 **Features:**
@@ -183,6 +198,28 @@ When an attacker gains access to a corporate email account and impersonates the 
 1. **Secure Browser Usage**: Use modern browsers that have built-in blocklists for known malicious sites (like Google Safe Browsing)
 2. **Check HTTPS**: Always verify the padlock icon and HTTPS in the address bar for sensitive sites
 3. **Bookmark Important Sites**: Use bookmarks for banking and important sites instead of clicking email links
+
+---
+
+## Data Privacy & Safety Essentials
+
+### Protecting Your Sensitive Information
+At SecureGuard AI, we prioritize your security. To keep your account and our platform safe, follow these strict data sharing rules:
+
+#### 1. Never Share Credentials
+Do **NOT** share your passwords, multi-factor authentication (MFA) codes, or recovery keys in this chat, via email, or with anyone claiming to be "support." SecureGuard staff will never ask for your password.
+
+#### 2. Protect API Keys & Secrets
+Your API keys and JWT secrets are like Master Keys to your security system. Never paste them into public forums, screenshots, or this chat. If an API key is ever exposed, revoke it immediately in the "Integration" section.
+
+#### 3. Avoid Sharing Harmful Content
+While you can use our scanners to analyze suspicious content, avoid sharing active malicious files or links directly in communication channels where others might accidentally click them. Use our specific scanning tools for all analysis.
+
+#### 4. Secure Handling of Personal Data
+Avoid sharing unnecessary Personally Identifiable Information (PII) like social security numbers, bank details, or private organizational secrets unless specifically required by a verified security flow.
+
+### Why This Matters
+Sharing sensitive data in chats or unencrypted channels creates a "security footprint" that attackers can exploit. By keeping your secrets secret, you reduce the attack surface for your entire organization.
 
 ---
 

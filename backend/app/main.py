@@ -27,8 +27,12 @@ app = FastAPI(title="AI Phishing Detection SaaS", version="1.0.0")
 @app.on_event("startup")
 async def startup():
     print("AI Phishing Detection SaaS Backend Started.")
-    # Tables and seeding are now handled by scripts/seed.py
-    pass
+    # Ensure tables are created in the database
+    from app.infrastructure.database.setup import engine, Base
+    async with engine.begin() as conn:
+        print("🔗 Syncing database tables...")
+        await conn.run_sync(Base.metadata.create_all)
+    print("✅ Database sync complete.")
 
 # Include Routers
 from app.application.routers import auth, dashboard, payment, simulation, scanner, website_scanner, api_keys, widget_api, admin  # noqa: E402

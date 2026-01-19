@@ -46,8 +46,9 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
-# Ensure 'nextjs' user can read/execute but NOT write
-RUN chmod -R 555 .
+# Ensure 'nextjs' user can read/execute but NOT write to most files
+# Except for the cache directory which may be needed for image optimization
+RUN mkdir -p .next/cache && chown -R nextjs:nodejs .next/cache && chmod -R 755 .next/cache
 
 USER nextjs
 

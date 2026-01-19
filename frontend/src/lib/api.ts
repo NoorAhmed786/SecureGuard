@@ -82,3 +82,13 @@ export async function loginRequest(formData: URLSearchParams): Promise<{ access_
 
     return response.json();
 }
+
+/**
+ * Broadcasts a security warning for a specific incident
+ */
+export async function broadcastAlert(incidentId: string | number): Promise<{ status: string }> {
+    return apiRequest<{ status: string }>('/api/v1/admin/broadcast-alert', {
+        method: 'POST',
+        body: JSON.stringify({ incident_id: incidentId })
+    });
+}

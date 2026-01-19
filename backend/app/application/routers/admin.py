@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Body
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Dict, Any
@@ -6,6 +6,8 @@ from typing import List, Dict, Any
 from app.infrastructure.database.setup import get_db
 from app.infrastructure.database.user_repository import UserRepository, UserCreate
 from app.infrastructure.database.models import UserModel, IncidentModel
+from app.application.dependencies import get_websocket_manager
+import json
 
 
 
@@ -78,3 +80,35 @@ async def create_admin_user(user: UserCreate, db: AsyncSession = Depends(get_db)
         "full_name": new_user.full_name,
         "msg": "User created successfully"
     }
+
+@router.post("/broadcast-alert")
+async def broadcast_alert(
+    incident_id: str = Body(..., embed=True),
+    custom_message: str = Body(None, embed=True),
+    db: AsyncSession = Depends(get_db),
+    manager = Depends(get_websocket_manager)
+):
+    """
+    Broadcasts a high-priority security warning to all connected users.
+    One-click remediation tool for admins.
+    """
+    # 1. Fetch incident details
+    result = await db.execute(select(IncidentModel).where(IncidentModel.id == incident_id))
+    incident = result.scalar_one_or_none()
+    
+    if not incident:
+        raise HTTPException(status_code=404, detail="Incident not found")
+    
+    # 2. Construct broadcast payload
+    payload = {
+        "type": "broadcast_warning",
+        "title": "🚨 SECURITY ACTION REQUIRED",
+        "message": custom_message or f"An active threat '{incident.subject}' was detected and blocked. Please remain vigilant.",
+        "level": incident.threat_level.value.upper(),
+        "timestamp": incident.detected_at.isoformat()
+    }
+    
+    # 3. Broadcast via WebSocket
+    await manager.broadcast(json.dumps(payload))
+    
+    return {"status": "success", "message": f"Security warning broadcasted for incident {incident_id}"}

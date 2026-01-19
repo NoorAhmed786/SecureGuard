@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ShieldAlert, Activity, GraduationCap, TrendingUp, AlertTriangle } from 'lucide-react';
+import { ShieldAlert, Activity, GraduationCap, TrendingUp, AlertTriangle, Megaphone, CheckCircle2, ShieldClose } from 'lucide-react';
 import ThreeGlobe from '@/components/ThreeGlobe';
-import { apiRequest } from '@/lib/api';
+import { apiRequest, broadcastAlert } from '@/lib/api';
 import { CONFIG } from '@/lib/config';
 
 interface Alert {
@@ -30,8 +30,22 @@ export default function Dashboard() {
         alerts: []
     });
     const [, setIsLoading] = useState(true);
+    const [broadcastStatus, setBroadcastStatus] = useState<Record<string, 'idle' | 'sending' | 'sent'>>({});
+    const [activeBroadcast, setActiveBroadcast] = useState<{ title: string, message: string } | null>(null);
+    const [userRole, setUserRole] = useState<'admin' | 'user' | null>(null);
 
     useEffect(() => {
+        // Decode role from token
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                const decoded = JSON.parse(atob(token.split('.')[1])) as { role?: 'admin' | 'user' };
+                setUserRole(decoded.role || 'user');
+            } catch (err) {
+                console.error("Failed to decode token:", err);
+            }
+        }
+
         async function fetchStats() {
             try {
                 const stats = await apiRequest<{
@@ -41,6 +55,7 @@ export default function Dashboard() {
                     security_score: number;
                     alerts: Alert[];
                 }>('/api/v1/dashboard/stats');
+                console.log("📊 Fetched Dashboard Stats:", stats);
                 setData(stats);
             } catch (err) {
                 console.error("Dashboard Fetch Error:", err);
@@ -57,10 +72,15 @@ export default function Dashboard() {
         function connect() {
             try {
                 const wsUrl = CONFIG.WS_URL;
+                if (!wsUrl) return;
 
                 console.log("🚀 Attempting WebSocket connection to:", wsUrl);
 
                 socket = new WebSocket(wsUrl);
+
+                socket.onopen = () => {
+                    console.log("✅ WebSocket connected successfully to:", wsUrl);
+                };
 
                 socket.onmessage = (event) => {
                     try {
@@ -71,22 +91,43 @@ export default function Dashboard() {
                                 threats_detected: prev.threats_detected + 1,
                                 alerts: [newAlert, ...prev.alerts].slice(0, 10) // Keep latest 10
                             }));
+                        } else if (newAlert.type === 'broadcast_warning') {
+                            setActiveBroadcast({
+                                title: newAlert.title,
+                                message: newAlert.message
+                            });
+                            // Auto-hide after 10 seconds
+                            setTimeout(() => setActiveBroadcast(null), 10000);
                         }
                     } catch (err) {
-                        console.error("WebSocket message error:", err);
+                        console.error("❌ WebSocket message parse error:", err, "Raw data:", event.data);
                     }
                 };
 
                 socket.onerror = (err) => {
-                    console.error(`WebSocket error at ${wsUrl}:`, err);
+                    // Browser WebSocket errors don't contain much info for security reasons,
+                    // but we can at least log the state of the socket.
+                    console.error(`❌ WebSocket error event triggered for ${wsUrl}. Current State:`,
+                        socket ? ["CONNECTING", "OPEN", "CLOSING", "CLOSED"][socket.readyState] : "NULL",
+                        err
+                    );
                 };
 
-                socket.onclose = () => {
-                    console.log("WebSocket connection closed. Attempting to reconnect...");
-                    reconnectTimeout = setTimeout(connect, 3000);
+                socket.onclose = (event) => {
+                    if (event.wasClean) {
+                        console.log(`ℹ️ WebSocket connection closed cleanly, code=${event.code} reason=${event.reason}`);
+                    } else {
+                        console.warn('⚠️ WebSocket connection died. Check if backend is running at:', wsUrl);
+                    }
+
+                    // Only reconnect if we didn't unmount
+                    reconnectTimeout = setTimeout(() => {
+                        console.log("🔄 Attempting to reconnect...");
+                        connect();
+                    }, 3000);
                 };
             } catch (err) {
-                console.error("Failed to construct WebSocket URL:", err);
+                console.error("❌ Failed to initiate WebSocket connection:", err);
             }
         }
 
@@ -112,6 +153,7 @@ export default function Dashboard() {
 
     const getAlertColor = (level: string) => {
         switch (level) {
+            case 'Critical':
             case 'High': return 'border-red-500/50 bg-red-500/10 text-red-500';
             case 'Medium': return 'border-orange-500/50 bg-orange-500/10 text-orange-500';
             case 'Low': return 'border-yellow-500/50 bg-yellow-500/10 text-yellow-500';
@@ -119,12 +161,46 @@ export default function Dashboard() {
         }
     };
 
+    const handleBroadcast = async (incidentId: string | number) => {
+        setBroadcastStatus(prev => ({ ...prev, [incidentId]: 'sending' as const }));
+        try {
+            await broadcastAlert(incidentId);
+            setBroadcastStatus(prev => ({ ...prev, [incidentId]: 'sent' as const }));
+            setTimeout(() => {
+                setBroadcastStatus(prev => ({ ...prev, [incidentId]: 'idle' as const }));
+            }, 3000);
+        } catch (err) {
+            console.error("Broadcast failed:", err);
+            setBroadcastStatus(prev => ({ ...prev, [incidentId]: 'idle' as const }));
+        }
+    };
+
     return (
         <div className="p-8 space-y-8 max-w-7xl mx-auto relative min-h-screen">
             <ThreeGlobe />
-            <header className="relative z-10">
+
+            {/* Global Broadcast Banner */}
+            {activeBroadcast && (
+                <motion.div
+                    initial={{ opacity: 0, y: -50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-full max-w-2xl px-4"
+                >
+                    <div className="bg-red-600 border-2 border-white/20 text-white p-4 rounded-2xl shadow-2xl flex items-center gap-4 backdrop-blur-xl">
+                        <div className="bg-white/20 p-2 rounded-lg">
+                            <Megaphone className="animate-bounce" size={24} />
+                        </div>
+                        <div className="flex-1">
+                            <h3 className="font-black tracking-tight">{activeBroadcast.title}</h3>
+                            <p className="text-sm font-medium opacity-90">{activeBroadcast.message}</p>
+                        </div>
+                    </div>
+                </motion.div>
+            )}
+
+            <header className="relative z-10 text-center lg:text-left">
                 <h1 className="text-3xl font-bold text-white">Security Command Center</h1>
-                <p className="text-slate-400 mt-2">Welcome back, Admin. Your system is 85% secure.</p>
+                <p className="text-slate-400 mt-2">Welcome back, {userRole === 'admin' ? 'Admin' : 'Team Member'}. Your system is 85% secure.</p>
             </header>
 
             {/* Stats Grid */}
@@ -170,6 +246,28 @@ export default function Dashboard() {
                                     <div>
                                         <h4 className="font-bold">{alert.title}</h4>
                                         <p className="text-sm mt-1 opacity-80">{alert.detail}</p>
+
+                                        {/* Remediation Action - Admin Only */}
+                                        {userRole === 'admin' && (alert.level === 'High' || alert.level === 'Critical') && (
+                                            <div className="mt-4">
+                                                <button
+                                                    onClick={() => handleBroadcast(alert.id)}
+                                                    disabled={broadcastStatus[alert.id] === 'sending' || broadcastStatus[alert.id] === 'sent'}
+                                                    className={`text-xs font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-all ${broadcastStatus[alert.id] === 'sent'
+                                                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                                                        : 'bg-white text-black hover:bg-slate-200 shadow-lg'
+                                                        }`}
+                                                >
+                                                    {broadcastStatus[alert.id] === 'sending' ? (
+                                                        <>Broadcasting...</>
+                                                    ) : broadcastStatus[alert.id] === 'sent' ? (
+                                                        <><CheckCircle2 size={14} /> Alert Sent to Team</>
+                                                    ) : (
+                                                        <><Megaphone size={14} /> Broadcast Warning to Team</>
+                                                    )}
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                     <span className="text-xs opacity-70 font-mono">{alert.time}</span>
                                 </div>
