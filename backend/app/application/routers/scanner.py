@@ -61,17 +61,20 @@ async def run_scan(request: ScanRequest):
     
     # SECURITY: Always enforce HTTPS for security scanning
     # We normalize user input to HTTPS to ensure secure connections
-    target_url = request.url.strip()
+    raw_url = request.url.strip()
     
-    # Remove any existing scheme and enforce HTTPS
-    if target_url.startswith('http://'):
-        # Replace insecure HTTP with HTTPS
-        target_url = target_url.replace('http://', 'https://', 1)
-    elif not target_url.startswith('https://'):
-        # Add HTTPS if no scheme provided
-        target_url = f"https://{target_url}"
-        
-    parsed = urlparse(target_url)
+    # Use urlparse to safely detect and upgrade scheme
+    parsed = urlparse(raw_url)
+    if not parsed.scheme:
+        # No scheme provided, prepend https
+        target_url = f"https://{raw_url}"
+        parsed = urlparse(target_url)
+    elif parsed.scheme == "http":
+        # Upgrade http to https
+        target_url = raw_url.replace("http", "https", 1)
+        parsed = urlparse(target_url)
+    else:
+        target_url = raw_url
     domain = parsed.netloc or parsed.path  # fallback if no scheme
     domain = domain.split(':')[0] # Remove port if present
 

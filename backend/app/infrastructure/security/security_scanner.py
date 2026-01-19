@@ -33,14 +33,17 @@ class SecurityScanner:
         
         # SECURITY: Always enforce HTTPS for security scanning
         # We normalize user input to HTTPS to ensure secure connections
-        if url.startswith('http://'):
-            # Replace insecure HTTP with HTTPS
-            url = url.replace('http://', 'https://', 1)
-        elif not url.startswith('https://'):
-            # Add HTTPS if no scheme provided
-            url = 'https://' + url
-        
+        # Use urlparse to safely detect and upgrade scheme
         parsed = urlparse(url)
+        if not parsed.scheme:
+            # No scheme provided, prepend https
+            url = f"https://{url}"
+            parsed = urlparse(url)
+        elif parsed.scheme == "http":
+            # Upgrade http to https
+            url = url.replace("http", "https", 1)
+            parsed = urlparse(url)
+        
         domain = parsed.netloc
         
         # 1. SSL/HTTPS Check
