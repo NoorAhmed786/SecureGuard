@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ShieldAlert, Activity, GraduationCap, TrendingUp, AlertTriangle, Megaphone, CheckCircle2, ShieldClose } from 'lucide-react';
+import { ShieldAlert, Activity, GraduationCap, TrendingUp, AlertTriangle, Megaphone, CheckCircle2 } from 'lucide-react';
 import ThreeGlobe from '@/components/ThreeGlobe';
 import { apiRequest, broadcastAlert } from '@/lib/api';
 import { CONFIG } from '@/lib/config';

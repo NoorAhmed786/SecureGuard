@@ -103,11 +103,11 @@ class WebGLErrorBoundary extends Component<
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(_: Error) {
+  static getDerivedStateFromError() {
     return { hasError: true };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  componentDidCatch(error: Error) {
     // Suppress WebGL errors in console
     if (error.message.includes('WebGL')) {
       console.log('WebGL not available, using fallback visualization');
@@ -124,19 +124,19 @@ class WebGLErrorBoundary extends Component<
 }
 
 function ThreeGlobeContent() {
-  const [hasWebGLError, setHasWebGLError] = useState(false);
-
-  useEffect(() => {
-    // Check if WebGL is available
+  const [hasWebGLError, setHasWebGLError] = useState(() => {
+    if (typeof document === 'undefined') return false;
     try {
       const canvas = document.createElement('canvas');
       const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-      if (!gl) {
-        setHasWebGLError(true);
-      }
-    } catch (e) {
-      setHasWebGLError(true);
+      return !gl;
+    } catch {
+      return true;
     }
+  });
+
+  useEffect(() => {
+    // Keep this only for dynamic context loss handling
   }, []);
 
   // Use fallback if WebGL error detected
