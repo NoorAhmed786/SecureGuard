@@ -127,40 +127,56 @@ async def scan_email(request: ScanRequest, db=Depends(get_db)):
 @app.post("/api/v1/rag/ask")
 async def ask_agent(request: AskRequest):
     """
-    Improved RAG using the SimpleVectorStore.
-    Retrieves the most relevant section and formats it into a natural response.
+    Improved RAG with conversational tone and greeting handling.
     """
     vector_store = get_vector_store()
     try:
+        query = request.query.strip().lower()
+        
         # 0. Safety Check
         sensitive_keywords = ["SECRET_KEY", "PASSWORD", "DATABASE_URL", "STRIPE_SECRET", "OPENAI_API_KEY", "JWT_SECRET"]
-        if any(key.lower() in request.query.lower() for key in sensitive_keywords):
+        if any(key.lower() in query for key in sensitive_keywords):
             return {
                 "answer": "I'm sorry, I cannot provide sensitive system information or credentials. As a security assistant, my goal is to protect your data, not expose it.",
                 "sources": ["Safety Filter"]
             }
 
-        # 1. Retrieve most relevant context
+        # 1. Greeting Detector
+        greetings = ["hi", "hello", "hey", "hola", "greetings", "good morning", "good afternoon"]
+        is_greeting = any(query.startswith(g) for g in greetings) or query in greetings
+        
+        greeting_response = ""
+        if is_greeting:
+            greeting_response = "Hi there! I'm your SecureGuard AI assistant. I'd be happy to help you with that! 😊\n\n"
+            # If it's just a greeting, return early
+            if query in greetings or (len(query.split()) <= 2 and is_greeting):
+                return {
+                    "answer": "Hi! I'm your SecureGuard AI assistant. How can I help you stay secure today? You can ask me about scanning emails, website security, or our protection widget!",
+                    "sources": ["Greeting Engine"]
+                }
+
+        # 2. Retrieve most relevant context
         results = await vector_store.search(request.query, top_k=1)
         
         if not results:
+            fallback = "I'm sorry, I don't have specific information on that in my current knowledge base. However, as a security assistant, I recommend being cautious with any unexpected links or requests for information."
             return {
-                "answer": "I'm sorry, I don't have specific information on that in my current knowledge base. However, as a security assistant, I recommend being cautious with any unexpected links or requests for information.",
+                "answer": f"{greeting_response}{fallback}",
                 "sources": []
             }
         
         context_doc = results[0]
         
-        # 2. Simulate LLM Synthesis (Template-based for local development)
-        # In a real app, this would be: await llm_provider.generate_answer(request.query, [context_doc])
-        
-        # Extract title (first line) and body
+        # 3. Conversational Synthesis
         lines = context_doc.content.split("\n")
         title = lines[0].replace("#", "").strip()
         body = "\n".join(lines[1:]).strip()
         
-        # Format the response naturally
-        answer = f"According to SecureGuard's documentation on **{title}**:\n\n{body}\n\nIs there anything else security-related you'd like to know?"
+        # Human-like response formatting
+        introduction = f"I found some information regarding **{title}** in our secure documentation:\n\n"
+        closing = "\n\nDoes that help? Let me know if you have more questions about this or any other SecureGuard feature!"
+        
+        answer = f"{greeting_response}{introduction}{body}{closing}"
         
         return {
             "answer": answer,
@@ -168,7 +184,7 @@ async def ask_agent(request: AskRequest):
         }
     except Exception as e:
         print(f"RAG Error: {str(e)}")
-        return {"answer": f"I encountered an error while searching for an answer: {str(e)}", "sources": []}
+        return {"answer": f"I encountered a little hiccup while looking that up: {str(e)}. Please try again!", "sources": []}
 
 @app.post("/api/v1/payment/subscribe")
 async def subscribe(request: SubscribeRequest):
