@@ -168,15 +168,39 @@ async def ask_agent(request: AskRequest):
         context_doc = results[0]
         
         # 3. Conversational Synthesis
+        import random
+        
         lines = context_doc.content.split("\n")
         title = lines[0].replace("#", "").strip()
         body = "\n".join(lines[1:]).strip()
         
-        # Human-like response formatting
-        introduction = f"I found some information regarding **{title}** in our secure documentation:\n\n"
-        closing = "\n\nDoes that help? Let me know if you have more questions about this or any other SecureGuard feature!"
+        # Varied, human-like phrasing
+        intros = [
+            f"Sure! I found some helpful details about **{title}**:",
+            f"Here's what I know regarding **{title}**:",
+            f"Based on our security documentation for **{title}**, here's an overview:",
+            f"I've got you covered! Here's the info on **{title}**:"
+        ]
         
-        answer = f"{greeting_response}{introduction}{body}{closing}"
+        closings = [
+            "\n\nDoes that clear things up for you? Let me know if you need any more help!",
+            "\n\nI hope that helps! Is there anything else about SecureGuard you're curious about?",
+            "\n\nFeel free to ask if you want more details on this or anything else security-related!",
+            "\n\nStay secure! Let me know if you have any other questions."
+        ]
+        
+        follow_ups = [
+            "You might also want to check out our **Website Scanner** or **Email Analysis** features!",
+            "By the way, have you tried our **Embeddable Protection Widget** yet?",
+            "If you're interested in phishing, I can also tell you about **Typosquatting**!",
+            "We also have a great section on **Security Best Practices** if you're interested."
+        ]
+        
+        intro = random.choice(intros)
+        closing = random.choice(closings)
+        suggestion = f"\n\n*Pro Tip: {random.choice(follow_ups)}*"
+        
+        answer = f"{greeting_response}{intro}\n\n{body}{closing}{suggestion}"
         
         return {
             "answer": answer,
@@ -184,7 +208,7 @@ async def ask_agent(request: AskRequest):
         }
     except Exception as e:
         print(f"RAG Error: {str(e)}")
-        return {"answer": f"I encountered a little hiccup while looking that up: {str(e)}. Please try again!", "sources": []}
+        return {"answer": "I'm so sorry, I ran into a bit of trouble while looking that up for you. Could you try asking again? I'll do my best to get that info next time! Support is also available if this keeps happening.", "sources": []}
 
 @app.post("/api/v1/payment/subscribe")
 async def subscribe(request: SubscribeRequest):

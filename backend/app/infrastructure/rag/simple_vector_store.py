@@ -21,25 +21,43 @@ class SimpleVectorStore(IVectorStore):
             clean = re.sub(r'[^\w\s]', '', text.lower())
             return set(clean.split())
 
+        def get_synonyms(word):
+            syns = {
+                "scan": ["scanner", "check", "analyze", "detect"],
+                "website": ["site", "domain", "url", "portal"],
+                "email": ["mail", "message", "inbox"],
+                "widget": ["script", "embed", "integration"],
+                "phishing": ["scam", "fraud", "fake"],
+                "secure": ["protect", "guard", "safe"],
+                "dashboard": ["overview", "stats", "panel"]
+            }
+            return syns.get(word, [])
+
         query_words = tokenize(query_text)
+        # Expand query with synonyms
+        expanded_query = set(query_words)
+        for word in query_words:
+            expanded_query.update(get_synonyms(word))
+            
         scored_docs = []
         
         for doc in self.documents:
             doc_words = tokenize(doc.content)
-            intersection = query_words.intersection(doc_words)
+            intersection = expanded_query.intersection(doc_words)
             
-            # Weighted score: matches / (log of doc length) to avoid favoring huge docs
-            # But for our small KB, raw intersection + phrase bonus is fine
+            # Base score from word intersection
             score = len(intersection)
             
-            # Phrase match bonus (exact substring)
+            # Phrase match bonus (exact substring) - high priority
             if query_text.lower() in doc.content.lower():
-                score += 10
+                score += 20
             
-            # Key section header bonus (if query words match title)
+            # Header boost (CRITICAL: If query words match the main title, it's likely the right doc)
             title = doc.content.split('\n')[0].lower()
-            if any(word in title for word in query_words):
-                score += 5
+            title_words = tokenize(title)
+            title_intersection = query_words.intersection(title_words)
+            if title_intersection:
+                score += (len(title_intersection) * 15)
 
             if score > 0:
                 scored_docs.append((score, doc))
