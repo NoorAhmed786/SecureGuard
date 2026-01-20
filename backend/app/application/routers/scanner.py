@@ -47,9 +47,33 @@ async def check_ssl(domain: str) -> Dict[str, Any]:
             with context.wrap_socket(sock, server_hostname=domain) as ssock:
                 cert = ssock.getpeercert()
                 # Check expiry
+                # Check expiry
                 not_after_str = cert.get('notAfter')
                 not_after = datetime.datetime.strptime(not_after_str, '%b %d %H:%M:%S %Y %Z')
-                if not_after > datetime.datetime.utcnow():
+                # Ensure comparison is timezone-naive as strptime usually returns naive for this format
+                # unless %Z acts up, but traditionally SSL module returns GMT times which strptime parses naively as local time if not careful.
+                # However, the fix is to replace utcnow().
+                
+                # Standard practice: ensure both are consistent. 
+                # cert time is usually GMT. strptime makes it naive.
+                # utcnow() makes it naive.
+                # The goal is to avoid utcnow().
+                
+                # If we use timezone-aware now, we might need to make the cert time aware too.
+                # But let's stick to the specific replacement requested: avoid utcnow().
+                
+                # Correction: Sonar wants timezone aware.
+                # Let's start by getting current UTC time correctly.
+                current_time = datetime.datetime.now(datetime.timezone.utc)
+                
+                # We need to make sure not_after is also aware, or comparison forces it.
+                # cert['notAfter'] is e.g. 'Jan 21 20:09:00 2026 GMT'.
+                # strptime('%Z') might not set tzinfo correctly depending on platform.
+                # Safer: parse naive, assume UTC, set replace(tzinfo=datetime.timezone.utc)
+                
+                not_after = not_after.replace(tzinfo=datetime.timezone.utc)
+                
+                if not_after > current_time:
                     return {"status": "Secure", "detail": f"Certificate is valid until {not_after_str}."}
                 else:
                     return {"status": "Expired", "detail": "Certificate has expired."}
