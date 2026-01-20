@@ -35,3 +35,11 @@ The phishing scanner is a computationally expensive component. If an attacker se
 ## 8. Elevation of Privilege: Broken Access Control (IDOR)
 **Justification:**
 Insecure Direct Object Reference (IDOR) occurs when an application exposes a reference to an internal implementation object, such as a database key. An attacker can manipulate these keys to access data they do not own. This is a massive risk in SaaS platforms where data multi-tenancy is required. We mitigate this by enforcing **ownership checks** at the application layer, ensuring the authenticated user ID matches the resource owner ID before returning any data.
+
+## 9. Spoofing: Widget API Key Theft
+**Justification:**
+Users embed the SecureGuard widget on their own sites using a public API key. If this key is stolen, an attacker could spoof the client's identity and consume their quota or inject false metrics. We mitigate this by implementing **Domain Locking (CORS)**. The backend verifies the `Origin` header of every widget request against the registered domain for that API key, rejecting any requests from unauthorized origins.
+
+## 10. Denial of Service: Simulation Engine Abuse
+**Justification:**
+The phishing simulation feature sends real emails via SMTP. If exploited, it could be used to spam third parties, damaging our IP reputation and getting our domain blacklisted. We mitigate this by restricting access to **Admins Only** and enforcing strict **Rate Limiting**. Additionally, the feature is designed to only send emails to verified domains or authorized test accounts, preventing open relay behavior.

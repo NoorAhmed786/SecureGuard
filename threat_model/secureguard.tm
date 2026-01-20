@@ -101,6 +101,30 @@
       "status": "Mitigated",
       "mitigation_strategy": "Ownership-based Access Control",
       "justification": "Ensures data access is limited to the resource owner."
+    },
+    {
+      "id": "STRIDE-S-02",
+      "stride_category": "Spoofing",
+      "title": "Widget API Key Theft",
+      "description": "Attacker stealing API keys to impersonate a legitimate website.",
+      "component": "Embeddable Widget / API Keys",
+      "likelihood": "Medium",
+      "impact": "High",
+      "status": "Mitigated",
+      "mitigation_strategy": "CORS & Domain Locking",
+      "justification": "API keys are restricted to specific origin domains."
+    },
+    {
+      "id": "STRIDE-D-02",
+      "stride_category": "Denial of Service",
+      "title": "Phishing Simulation Spam",
+      "description": "Abusing the simulation engine to send unauthorized spam.",
+      "component": "Simulation Engine",
+      "likelihood": "Low",
+      "impact": "Medium",
+      "status": "Mitigated",
+      "mitigation_strategy": "Admin-only Access & Rate Limiting",
+      "justification": "Only authenticated admins can trigger simulations, with strict rate limits."
     }
   ]
 }

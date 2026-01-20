@@ -67,6 +67,8 @@ A comprehensive administrative panel for managing users, API keys, and system se
 ### High-Level Design
 SecureGuard follows a **Layered Clean Architecture** to ensure scalability and security.
 
+For a detailed breakdown of data flows and trust boundaries, see the [Data Flow Diagram (DFD)](threat_model/data_flow_diagram.md).
+
 ```mermaid
 graph TD
     User((User)) -->|HTTPS| Frontend[Next.js Frontend]
@@ -74,6 +76,13 @@ graph TD
     Backend --> DB[(PostgreSQL DB)]
     Backend --> Vector[(RAG Vector Store)]
     Backend --> External[Stripe / OpenAI]
+    
+    %% Widget Flow
+    ClientSite[Client Website] -->|Widget API| Backend
+    
+    %% Simulation Flow
+    Backend -->|SMTP| Email[Email Service]
+    Email -->|Phishing Sim| User
 ```
 
 ### 🛡️ Security & Code Quality
