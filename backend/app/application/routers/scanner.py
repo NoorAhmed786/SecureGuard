@@ -42,6 +42,7 @@ def check_typosquatting(domain: str) -> Dict[str, Any]:
 async def check_ssl(domain: str) -> Dict[str, Any]:
     try:
         context = ssl.create_default_context()
+        context.minimum_version = ssl.TLSVersion.TLSv1_2
         with socket.create_connection((domain, 443), timeout=5) as sock:
             with context.wrap_socket(sock, server_hostname=domain) as ssock:
                 cert = ssock.getpeercert()

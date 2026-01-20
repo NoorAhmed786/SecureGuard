@@ -109,6 +109,7 @@ class SecurityScanner:
             
             # Try to verify SSL certificate
             context = ssl.create_default_context()
+            context.minimum_version = ssl.TLSVersion.TLSv1_2
             with socket.create_connection((domain, 443), timeout=self.timeout) as sock:
                 with context.wrap_socket(sock, server_hostname=domain) as ssock:
                     cert = ssock.getpeercert()
