@@ -52,11 +52,16 @@ graph TD
     EmailProvider -->|14. Email| User
 
     %% Trust Boundaries Style
-    style User fill:#f9f,stroke:#333,stroke-width:2px
-    style Admin fill:#f9f,stroke:#333,stroke-width:2px
-    style PaymentGW fill:#ddd,stroke:#333,stroke-dasharray: 5 5
-    style AI_Provider fill:#ddd,stroke:#333,stroke-dasharray: 5 5
-    style SafeBrowsing fill:#ddd,stroke:#333,stroke-dasharray: 5 5
+    %% User/Admin: Purple/Blue Pastel with distinct border and black text
+    style User fill:#e1bee7,stroke:#4a148c,stroke-width:2px,color:#000
+    style Admin fill:#e1bee7,stroke:#4a148c,stroke-width:2px,color:#000
+    
+    %% External: Orange Pastel with dashed border and black text
+    style PaymentGW fill:#ffcc80,stroke:#e65100,stroke-dasharray: 5 5,color:#000
+    style AI_Provider fill:#ffcc80,stroke:#e65100,stroke-dasharray: 5 5,color:#000
+    style SafeBrowsing fill:#ffcc80,stroke:#e65100,stroke-dasharray: 5 5,color:#000
+    style ClientSite fill:#ffcc80,stroke:#e65100,stroke-dasharray: 5 5,color:#000
+    style EmailProvider fill:#ffcc80,stroke:#e65100,stroke-dasharray: 5 5,color:#000
 ```
 
 ## Key Trust Boundaries

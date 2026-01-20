@@ -83,6 +83,12 @@ graph TD
     %% Simulation Flow
     Backend -->|SMTP| Email["Email Service"]
     Email -->|Phishing Sim| User
+
+    %% Styles for visibility
+    style User fill:#e1bee7,stroke:#4a148c,stroke-width:2px,color:#000
+    style ClientSite fill:#ffcc80,stroke:#e65100,stroke-dasharray: 5 5,color:#000
+    style External fill:#ffcc80,stroke:#e65100,stroke-dasharray: 5 5,color:#000
+    style Email fill:#ffcc80,stroke:#e65100,stroke-dasharray: 5 5,color:#000
 ```
 
 ### 🛡️ Security & Code Quality
