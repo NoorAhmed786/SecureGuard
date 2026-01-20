@@ -5,20 +5,20 @@ This Data Flow Diagram (DFD) visualizes the flow of information within the Secur
 ```mermaid
 graph TD
     %% Entities
-    User((User / Browser))
-    Admin((Admin))
-    PaymentGW[External: Stripe]
-    AI_Provider[External: OpenAI]
-    SafeBrowsing[External: Google Safe Browsing]
+    User(("User / Browser"))
+    Admin(("Admin"))
+    PaymentGW["External: Stripe"]
+    AI_Provider["External: OpenAI"]
+    SafeBrowsing["External: Google Safe Browsing"]
 
     %% Processes
     subgraph "Trust Boundary: SecureGuard Cloud"
-        Frontend[Frontend (Next.js)]
-        Backend[Backend API (FastAPI)]
+        Frontend["Frontend (Next.js)"]
+        Backend["Backend API (FastAPI)"]
         
         subgraph "Internal Network / VPC"
-            DB[(PostgreSQL Database)]
-            VectorDB[(Vector Store)]
+            DB[("PostgreSQL Database")]
+            VectorDB[("Vector Store")]
         end
     end
 
@@ -37,17 +37,17 @@ graph TD
     %% Data Flows - External
     Backend -->|7. TLS: Process Payment| PaymentGW
     Backend -->|8. TLS: LLM Inference| AI_Provider
-    url_scanner[Internal Component: Scanner]
+    url_scanner["Internal Component: Scanner"]
     Backend -.->|9. Invoke| url_scanner
     url_scanner -->|10. TLS: Verify URL| SafeBrowsing
 
     %% Data Flows - Widget
-    ClientSite[External Website\n(Client Host)]
+    ClientSite["External Website<br>(Client Host)"]
     ClientSite -->|11. Script Load & API Key| Backend
     Backend -->|12. JSON: Threat Status| ClientSite
 
     %% Data Flows - Simulation
-    EmailProvider[External: Email Service/SMTP]
+    EmailProvider["External: Email Service/SMTP"]
     Backend -->|13. SMTP: Send Phishing Sim| EmailProvider
     EmailProvider -->|14. Email| User
 
