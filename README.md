@@ -10,6 +10,8 @@ SecureGuard AI is a high-performance, premium-grade SaaS platform designed to pr
 
 The fastest way to get SecureGuard running is using Docker. This starts the Frontend, Backend, and PostgreSQL database with a single command.
 
+![Docker Build Successful](screenshots/docker%20build%20succesfull.png)
+
 ### 1. Prerequisites
 - [Docker](https://www.docker.com/products/docker-desktop/) installed and running.
 - [Git](https://git-scm.com/) installed.
@@ -49,10 +51,14 @@ A premium dashboard providing real-time metrics and a unified engine to analyze 
 An intelligent security companion that answers technical questions and analyzes threats using a proprietary knowledge base.
 ![AI Assistant](screenshots/rag.png)
 
-### 🚨 Real-time Alerts & Admin Control
-Instant threat notifications and a comprehensive administrative panel for managing the entire system.
+### 🚨 Real-time Alerts
+Instant threat notifications ensure you never miss a critical security event.
 ![Alerts](screenshots/alerts.png)
+
+### 👑 Admin Panel
+A comprehensive administrative panel for managing users, API keys, and system settings.
 ![Admin Dashboard](screenshots/admin.png)
+![Admin Alerts](screenshots/admin-alert.png)
 
 ---
 
