@@ -71,17 +71,17 @@ For a detailed breakdown of data flows and trust boundaries, see the [Data Flow 
 
 ```mermaid
 graph TD
-    User((User)) -->|HTTPS| Frontend[Next.js Frontend]
-    Frontend -->|REST / WS| Backend[FastAPI Backend]
-    Backend --> DB[(PostgreSQL DB)]
-    Backend --> Vector[(RAG Vector Store)]
-    Backend --> External[Stripe / OpenAI]
+    User(("User")) -->|HTTPS| Frontend["Next.js Frontend"]
+    Frontend -->|REST / WS| Backend["FastAPI Backend"]
+    Backend --> DB[("PostgreSQL Database")]
+    Backend --> Vector[("RAG Vector Store")]
+    Backend --> External["Stripe / OpenAI"]
     
     %% Widget Flow
-    ClientSite[Client Website] -->|Widget API| Backend
+    ClientSite["Client Website"] -->|Widget API| Backend
     
     %% Simulation Flow
-    Backend -->|SMTP| Email[Email Service]
+    Backend -->|SMTP| Email["Email Service"]
     Email -->|Phishing Sim| User
 ```
 
