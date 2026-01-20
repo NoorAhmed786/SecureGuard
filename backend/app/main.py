@@ -168,7 +168,7 @@ async def ask_agent(request: AskRequest):
         context_doc = results[0]
         
         # 3. Conversational Synthesis
-        import random
+        import secrets
         
         lines = context_doc.content.split("\n")
         title = lines[0].replace("#", "").strip()
@@ -196,9 +196,9 @@ async def ask_agent(request: AskRequest):
             "We also have a great section on **Security Best Practices** if you're interested."
         ]
         
-        intro = random.choice(intros)
-        closing = random.choice(closings)
-        suggestion = f"\n\n*Pro Tip: {random.choice(follow_ups)}*"
+        intro = secrets.choice(intros)
+        closing = secrets.choice(closings)
+        suggestion = f"\n\n*Pro Tip: {secrets.choice(follow_ups)}*"
         
         answer = f"{greeting_response}{intro}\n\n{body}{closing}{suggestion}"
         
