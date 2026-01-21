@@ -133,38 +133,42 @@ cd frontend && npm run lint
 
 ---
 
-## 🔒 Dependency-Check (OWASP)
-
-This project uses **OWASP Dependency-Check** to identify any known vulnerabilities in the dependencies used by the application. Here's how you can run the Dependency-Check tool manually to generate a current report.
-
-### Requirements:
-- Java 8 or higher must be installed.
-- [OWASP Dependency-Check](https://owasp.org/www-project-dependency-check/) must be installed.
-
-### Steps to Run:
-1. **Navigate to the project directory**:
-    ```bash
-    cd D:\SecureGuard
-    ```
-
-2. **Run the scan**:
-    ```bash
-    dependency-check --project "SecureGuard" --scan . --out ./dependency-reports --format HTML --noupdate
-    ```
-   *Note: Remove `--noupdate` to allow the tool to update its vulnerability database (recommended).*
-
-### Command Explanation:
-- `--project "SecureGuard"`: Defines the project name in the report.
-- `--scan .`: Scans the current directory (or specify a full path like `D:\SecureGuard`).
-- `--out ./dependency-reports`: Saves the report in the specified folder.
-- `--format HTML`: Generates an easy-to-read HTML report.
-
----
-
 ## ⚖️ Compliance & Audit
 SecureGuard follows the **Microsoft SDL** and **STRIDE** methodology.
 - **Threat Model**: [threat_model/secureguard_report.html](threat_model/secureguard_report.html)
 - **Justification**: [threat_model/justification.md](threat_model/justification.md)
+
+---
+
+### 🛡️ Manual Security Verification
+
+#### Dependency-Check (OWASP)
+
+This project uses **OWASP Dependency-Check** to identify any known vulnerabilities in the dependencies used by the application. Here's how you can run the Dependency-Check tool to generate a report.
+
+**Requirements:**
+- Java 8 or higher must be installed on your machine.
+- Download and install [OWASP Dependency-Check](https://owasp.org/www-project-dependency-check/).
+
+**Steps to Run Dependency-Check:**
+1. **Navigate to the project directory**:
+    ```bash
+    cd path/to/your/project
+    ```
+
+2. **Run the Dependency-Check**:
+    ```bash
+    dependency-check --project "SecureGuard" --scan D:\SecureGuard --out D:\SecureGuard\dependency-reports --format HTML --noupdate
+    ```
+
+3. After running the above command, a report will be generated at `D:\SecureGuard\dependency-reports` (or the directory you specified).
+
+**Explanation of the Command:**
+- `--project "SecureGuard"`: Defines the name of your project.
+- `--scan D:\SecureGuard`: Specifies the directory to scan (your project directory in this case).
+- `--out D:\SecureGuard\dependency-reports`: Specifies where to save the generated report.
+- `--format HTML`: Generates the report in HTML format.
+- `--noupdate`: Skips the NVD database update process (useful if you're facing issues with the update).
 
 ---
 
