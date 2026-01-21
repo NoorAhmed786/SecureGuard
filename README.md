@@ -99,6 +99,7 @@ The project is continuously monitored by **SonarCloud** for vulnerabilities and 
 - 📊 **[Live SonarCloud Report](https://sonarcloud.io/dashboard?id=NoorAhmed786_SecureGuard)**
 - 🔒 **Zero-Secrets Policy**: Sensitive data is excluded via `.dockerignore` and `.gitignore`.
 - 🔐 **Hardened Dockerfiles**: Optimized for security and minimal attack surface.
+- 📦 **Automated Dependency Scanning**: Dependencies are vetted for vulnerabilities using OWASP Dependency Check (HTML reports available in Actions artifacts).
 
 ---
 
