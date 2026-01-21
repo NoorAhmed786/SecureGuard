@@ -101,6 +101,12 @@ The project is continuously monitored by **SonarCloud** for vulnerabilities and 
 - 🔐 **Hardened Dockerfiles**: Optimized for security and minimal attack surface.
 - 📦 **Automated Dependency Scanning**: Dependencies are vetted for vulnerabilities using OWASP Dependency Check (HTML reports available in Actions artifacts).
 
+    **Before Resolution:**
+    ![Dependency Check Before](screenshots/dependency-check-before-isssue-resolve-1.png)
+
+    **After Resolution:**
+    ![Dependency Check After](screenshots/dependency-check-after-issue-resolve.png)
+
 ---
 
 ## 🛠️ Technical Details
