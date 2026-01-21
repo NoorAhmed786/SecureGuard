@@ -166,7 +166,7 @@ This project supports **Software Bill of Materials (SBOM)** generation using Cyc
     ```bash
     cd backend
     pip install cyclonedx-bom
-    cyclonedx-py -r -i requirements.txt -o bom.xml
+    cyclonedx-py requirements -i requirements.txt -o bom.xml
     ```
 
 **Automated Workflow:**
