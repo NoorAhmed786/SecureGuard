@@ -113,33 +113,6 @@ The project is continuously monitored by **SonarCloud** for vulnerabilities and 
 
 ---
 
-## 🛠️ Technical Details
-
-### Tech Stack
-| Component | Technology | Purpose |
-| :--- | :--- | :--- |
-| **Frontend** | Next.js 16, React 19, TypeScript | Modern SPA with SSR |
-| **Backend** | Python 3.11, FastAPI, SQLAlchemy | High-performance async API |
-| **Database** | PostgreSQL 15 | Persistent data storage |
-| **AI/ML** | Scikit-learn, VectorStore | Phishing detection & RAG |
-
-### 🧪 Testing
-```bash
-# Backend Tests
-cd backend && python -m pytest tests/
-# Frontend Linting
-cd frontend && npm run lint
-```
-
----
-
-## ⚖️ Compliance & Audit
-SecureGuard follows the **Microsoft SDL** and **STRIDE** methodology.
-- **Threat Model**: [threat_model/secureguard_report.html](threat_model/secureguard_report.html)
-- **Justification**: [threat_model/justification.md](threat_model/justification.md)
-
----
-
 ### 🛡️ Manual Security Verification
 
 #### Dependency-Check (OWASP)
@@ -176,6 +149,57 @@ To ensure a secure and reliable automated dependency check, the GitHub Actions w
 
 1.  **Official Action Standardization**: Replaced legacy manual download scripts with the official **[OWASP Dependency-Check Action](https://github.com/dependency-check/Dependency-Check_Action)**. This ensures access to the latest features and vulnerability definitions.
 2.  **Supply Chain Hardening**: The action is pinned to a specific immutable commit SHA (`1e54355...`) instead of a mutable tag like `@main`. This prevents potential supply chain attacks where a malicious actor could overwrite a tag to inject harmful code into the CI/CD pipeline.
+
+#### SBOM Generation (CycloneDX)
+
+This project supports **Software Bill of Materials (SBOM)** generation using CycloneDX to provide transparency into dependencies.
+
+**Manual Generation:**
+
+1. **Frontend (Node.js)**:
+    ```bash
+    cd frontend
+    npx @cyclonedx/cyclonedx-npm --output-file bom.xml
+    ```
+
+2. **Backend (Python)**:
+    ```bash
+    cd backend
+    pip install cyclonedx-bom
+    cyclonedx-py -r -i requirements.txt -o bom.xml
+    ```
+
+**Automated Workflow:**
+The project includes a GitHub Actions workflow (`.github/workflows/owasp-dt-check.yml`) that automatically generates SBOMs and uploads them to OWASP Dependency Track for continuous vulnerability monitoring.
+
+> **Note**: To use the automated workflow, configure `OWASP_DT_URL` and `OWASP_DT_KEY` in your repository secrets.
+
+---
+
+## 🛠️ Technical Details
+
+### Tech Stack
+| Component | Technology | Purpose |
+| :--- | :--- | :--- |
+| **Frontend** | Next.js 16, React 19, TypeScript | Modern SPA with SSR |
+| **Backend** | Python 3.11, FastAPI, SQLAlchemy | High-performance async API |
+| **Database** | PostgreSQL 15 | Persistent data storage |
+| **AI/ML** | Scikit-learn, VectorStore | Phishing detection & RAG |
+
+### 🧪 Testing
+```bash
+# Backend Tests
+cd backend && python -m pytest tests/
+# Frontend Linting
+cd frontend && npm run lint
+```
+
+---
+
+## ⚖️ Compliance & Audit
+SecureGuard follows the **Microsoft SDL** and **STRIDE** methodology.
+- **Threat Model**: [threat_model/secureguard_report.html](threat_model/secureguard_report.html)
+- **Justification**: [threat_model/justification.md](threat_model/justification.md)
 
 ---
 
