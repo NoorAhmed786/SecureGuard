@@ -174,6 +174,36 @@ The project includes a GitHub Actions workflow (`.github/workflows/owasp-dt-chec
 
 > **Note**: To use the automated workflow, configure `OWASP_DT_URL` and `OWASP_DT_KEY` in your repository secrets.
 
+**What's in the SBOM?**
+
+The generated SBOM files (`bom.xml` or `bom.json`) contain a complete inventory of:
+- **All Dependencies**: Direct and transitive (dependencies of dependencies)
+- **Version Information**: Exact versions of each package
+- **Package URLs (PURLs)**: Standardized identifiers like `pkg:pypi/fastapi@0.127.0`
+- **License Data**: License information for compliance
+- **Vulnerability Identifiers**: CVE references for known security issues
+
+**Analyzing Your SBOMs:**
+
+You can analyze the generated SBOMs using various tools:
+
+1. **Online Viewers**:
+   - Upload to [CycloneDX Viewer](https://cyclonedx.github.io/cyclonedx-web-tool/)
+   - Use [OWASP Dependency Track](https://dependencytrack.org/)
+
+2. **CLI Tools**:
+   ```bash
+   # Using grype (vulnerability scanner)
+   grype sbom:frontend/bom.xml
+   
+   # Using syft (SBOM analyzer)
+   syft packages sbom:backend/bom.xml
+   ```
+
+3. **GitHub Security**:
+   - Upload SBOMs to GitHub's Dependency Graph
+   - Enable Dependabot alerts for automatic vulnerability notifications
+
 ---
 
 ## 🛠️ Technical Details
