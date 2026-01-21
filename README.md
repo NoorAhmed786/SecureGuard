@@ -170,6 +170,13 @@ This project uses **OWASP Dependency-Check** to identify any known vulnerabiliti
 - `--format HTML`: Generates the report in HTML format.
 - `--noupdate`: Skips the NVD database update process (useful if you're facing issues with the update).
 
+#### CI/CD Security Configuration
+
+To ensure a secure and reliable automated dependency check, the GitHub Actions workflow was configured with the following security measures:
+
+1.  **Official Action Standardization**: Replaced legacy manual download scripts with the official **[OWASP Dependency-Check Action](https://github.com/dependency-check/Dependency-Check_Action)**. This ensures access to the latest features and vulnerability definitions.
+2.  **Supply Chain Hardening**: The action is pinned to a specific immutable commit SHA (`1e54355...`) instead of a mutable tag like `@main`. This prevents potential supply chain attacks where a malicious actor could overwrite a tag to inject harmful code into the CI/CD pipeline.
+
 ---
 
 Licensed under the **MIT License**.
