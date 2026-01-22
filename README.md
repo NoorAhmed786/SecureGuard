@@ -107,6 +107,8 @@ The project is continuously monitored by **SonarCloud** for vulnerabilities and 
 
     **Before Resolution:**
     ![Dependency Check Before](screenshots/dependency-check-before-isssue-resolve-1.png)
+    ![Dependency Check Before](screenshots/dependency-check-before-isssue-resolve-2.png)
+    ![Dependency Check Before](screenshots/dependency-check-before-isssue-resolve-3.png)
 
     **After Resolution:**
     ![Dependency Check After](screenshots/dependency-check-after-issue-resolve.png)
