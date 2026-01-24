@@ -1,0 +1,38 @@
+name: Dependency-Track SBOM Upload
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  dependency-track:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    # FRONTEND SBOM
+    - name: Generate Frontend SBOM (CycloneDX)
+      uses: CycloneDX/gh-node-module-generatebom@v2
+      with:
+        path: frontend
+        output: frontend-sbom.xml
+
+    # BACKEND SBOM
+    - name: Generate Backend SBOM (Python)
+      run: |
+        pip install cyclonedx-bom
+        cyclonedx-py -o backend-sbom.xml
+
+    # Upload SBOMs to Dependency-Track
+    - name: Upload SBOM to Dependency-Track
+      uses: Quobis/action-owasp-dependecy-track-check@v1
+      with:
+        serverUrl: ${{ secrets.DEPENDENCY_TRACK_URL }}
+        apiKey: ${{ secrets.DEPENDENCY_TRACK_API_KEY }}
+        projectName: SecureGuard
+        projectVersion: main
+        bomFile: frontend-sbom.xml
