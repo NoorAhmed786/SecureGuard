@@ -3,36 +3,52 @@ name: Dependency-Track SBOM Upload
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
-  dependency-track:
+  sbom-and-upload:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    # FRONTEND SBOM
-    - name: Generate Frontend SBOM (CycloneDX)
-      uses: CycloneDX/gh-node-module-generatebom@v2
-      with:
-        path: frontend
-        output: frontend-sbom.xml
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
 
-    # BACKEND SBOM
-    - name: Generate Backend SBOM (Python)
-      run: |
-        pip install cyclonedx-bom
-        cyclonedx-py -o backend-sbom.xml
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
-    # Upload SBOMs to Dependency-Track
-    - name: Upload SBOM to Dependency-Track
-      uses: Quobis/action-owasp-dependecy-track-check@v1
-      with:
-        serverUrl: ${{ secrets.DEPENDENCY_TRACK_URL }}
-        apiKey: ${{ secrets.DEPENDENCY_TRACK_API_KEY }}
-        projectName: SecureGuard
-        projectVersion: main
-        bomFile: frontend-sbom.xml
+      - name: Generate SBOM (Frontend)
+        working-directory: frontend
+        run: |
+          npm ci
+          npx @cyclonedx/cdxgen -o ../sbom-frontend.json
+
+      - name: Generate SBOM (Backend)
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install cyclonedx-bom
+          python -m cyclonedx_bom -o ../sbom-backend.json
+
+      - name: Upload Frontend SBOM to Dependency-Track
+        run: |
+          curl -X POST "${{ secrets.DEPENDENCY_TRACK_URL }}/api/v1/bom" \
+            -H "X-Api-Key: ${{ secrets.DEPENDENCY_TRACK_API_KEY }}" \
+            -H "Content-Type: multipart/form-data" \
+            -F "project=${{ secrets.DT_SECUREGUARD_FRONTEND_UUID }}" \
+            -F "bom=@sbom-frontend.json"
+
+      - name: Upload Backend SBOM to Dependency-Track
+        run: |
+          curl -X POST "${{ secrets.DEPENDENCY_TRACK_URL }}/api/v1/bom" \
+            -H "X-Api-Key: ${{ secrets.DEPENDENCY_TRACK_API_KEY }}" \
+            -H "Content-Type: multipart/form-data" \
+            -F "project=${{ secrets.DT_SECUREGUARD_BACKEND_UUID }}" \
+            -F "bom=@sbom-backend.json"
