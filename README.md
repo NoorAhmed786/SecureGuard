@@ -208,6 +208,122 @@ You can analyze the generated SBOMs using various tools:
 
 ---
 
+#### Dependency-Track Integration
+
+This project includes **OWASP Dependency-Track** for continuous vulnerability monitoring and SBOM analysis. Dependency-Track is a Component Analysis platform that allows organizations to identify and reduce risk in the software supply chain.
+
+**Setup Dependency-Track:**
+
+1. **Start Dependency-Track** (using the included `docker-compose.yml`):
+   ```bash
+   docker-compose up -d
+   ```
+
+2. **Access Dependency-Track**:
+   - **Web UI**: [http://localhost:8080](http://localhost:8080)
+   - **API**: [http://localhost:8081](http://localhost:8081)
+   - **Default Credentials**: 
+     - Username: `admin`
+     - Password: `admin`
+     - ⚠️ **Important**: Change the default password on first login!
+
+3. **Configuration**:
+   - Memory limit: 4GB (configurable in `docker-compose.yml`)
+   - Ports: Frontend (8080), API (8081)
+   - Database: PostgreSQL (included in docker-compose)
+
+**Uploading SBOMs to Dependency-Track:**
+
+**Recommended Approach: Separate Projects**
+
+For better organization and granular vulnerability tracking, create **separate projects** for frontend and backend:
+
+- **Project 1**: "SecureGuard Frontend" → Upload `bom-frontend.xml`
+- **Project 2**: "SecureGuard Backend" → Upload `bom-backend.xml`
+
+**Method 1: Web UI Upload**
+
+1. **Create Projects**:
+   - Navigate to **Projects** in the left sidebar
+   - Click **+** (Create Project) button
+   - Create two projects:
+     - Name: `SecureGuard Frontend`, Version: `1.0.0`
+     - Name: `SecureGuard Backend`, Version: `1.0.0`
+   - Click **Save** for each
+
+2. **Upload SBOMs**:
+   - Open each project you created
+   - Look for **"Upload BOM"** or **"Import BOM"** button (usually in the project's Components tab or at the top)
+   - Upload `bom-frontend.xml` to the Frontend project
+   - Upload `bom-backend.xml` to the Backend project
+
+3. **View Results**:
+   - Use the **Portfolio** view to see all projects together
+   - Navigate to **Vulnerabilities** to see security issues
+   - Check **Components** to see dependency inventory
+
+**Method 2: API Upload (Automated)**
+
+Use the provided Python script for automated upload:
+
+1. **Get API Key**:
+   - Log in to Dependency-Track UI
+   - Click your avatar (top right) → **Access Management** → **API Keys**
+   - Click **+** to create a new API key
+   - Copy the API key
+
+2. **Set Environment Variable**:
+   ```bash
+   # Windows PowerShell
+   $env:DT_API_KEY="your-api-key-here"
+   
+   # Linux/Mac
+   export DT_API_KEY="your-api-key-here"
+   ```
+
+3. **Run Upload Script**:
+   ```bash
+   python upload_sbom.py
+   ```
+
+   The script will:
+   - Create two separate projects (Frontend and Backend)
+   - Upload `bom-frontend.xml` to the Frontend project
+   - Upload `bom-backend.xml` to the Backend project
+   - Display project URLs for easy access
+
+**Available SBOM Files:**
+
+- `bom-frontend.xml` (root) - Frontend dependencies (Node.js/Next.js)
+- `bom-backend.xml` (root) - Backend dependencies (Python/FastAPI)
+- `frontend/bom.xml` - Original frontend SBOM
+- `backend/bom.xml` - Original backend SBOM
+
+**Troubleshooting:**
+
+- **Container not starting**: Ensure Docker Desktop is running
+- **Port conflicts**: Check if ports 8080 or 8081 are already in use
+- **DNS errors**: The docker-compose.yml includes DNS configuration (8.8.8.8, 8.8.4.4)
+- **Memory issues**: Adjust `mem_limit` in `docker-compose.yml` if needed
+- **Health check failures**: Check container logs: `docker logs secureguard-apiserver-1`
+
+**Viewing Vulnerability Reports:**
+
+After uploading SBOMs, Dependency-Track will:
+- Analyze all components for known vulnerabilities
+- Match against NVD (National Vulnerability Database)
+- Provide risk scores and severity ratings
+- Show affected components and recommended fixes
+- Track vulnerability trends over time
+
+Access reports via:
+- **Portfolio** → Overview of all projects
+- **Projects** → Individual project details
+- **Vulnerabilities** → All vulnerabilities across portfolio
+- **Components** → Component inventory and versions
+
+---
+
 ## 🛠️ Technical Details
 
 ### Tech Stack
