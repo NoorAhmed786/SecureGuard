@@ -1,4 +1,4 @@
-name: Dependency-Track SBOM Upload
+name: Dependency-Track (Frontend + Backend SBOM)
 
 on:
   push:
@@ -13,48 +13,31 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # ---------- Frontend SBOM ----------
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: "20"
 
+      - name: Generate Frontend SBOM (CycloneDX)
+        working-directory: frontend
+        run: |
+          npm ci
+          npx @cyclonedx/cdxgen -o ../sbom-frontend.json
+
+      # ---------- Backend SBOM ----------
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      # -------------------------
-      # FRONTEND SBOM (Node)
-      # -------------------------
-      - name: Generate SBOM (Frontend)
-        working-directory: frontend
-        run: |
-          npm ci
-          npx @cyclonedx/cdxgen -o ../sbom-frontend.json .
-
-      # -------------------------
-      # BACKEND SBOM (Python)
-      # -------------------------
-      - name: Generate SBOM (Backend)
+      - name: Generate Backend SBOM (CycloneDX)
         run: |
           python -m pip install --upgrade pip
-          python -m pip install cyclonedx-bom
-          cyclonedx-py -r -i backend/requirements.txt -o sbom-backend.json
+          pip install cyclonedx-bom
+          cyclonedx-py requirements backend/requirements.txt -o sbom-backend.json
 
-      # -------------------------
-      # Upload SBOMs as artifacts (optional but useful)
-      # -------------------------
-      - name: Upload SBOM Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: sboms
-          path: |
-            sbom-frontend.json
-            sbom-backend.json
-
-      # -------------------------
-      # Upload to Dependency-Track
-      # -------------------------
+      # ---------- Upload SBOMs to Dependency-Track ----------
       - name: Upload Frontend SBOM to Dependency-Track
         run: |
           curl -sS -X POST "${{ secrets.DEPENDENCY_TRACK_URL }}/api/v1/bom" \
@@ -68,3 +51,12 @@ jobs:
             -H "X-Api-Key: ${{ secrets.DEPENDENCY_TRACK_API_KEY }}" \
             -F "project=${{ secrets.DT_SECUREGUARD_BACKEND_UUID }}" \
             -F "bom=@sbom-backend.json"
+
+      # ---------- Artifacts (download SBOMs from GitHub Actions) ----------
+      - name: Upload SBOM files as artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sboms
+          path: |
+            sbom-frontend.json
+            sbom-backend.json
