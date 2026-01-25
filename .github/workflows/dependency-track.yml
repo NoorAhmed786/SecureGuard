@@ -5,6 +5,13 @@ on:
     branches: ["main"]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: dependency-track-sbom-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   sbom-and-upload:
     runs-on: ubuntu-latest
@@ -18,8 +25,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
 
-      - name: Generate Frontend SBOM (CycloneDX)
+      - name: Generate Frontend SBOM (CycloneDX cdxgen)
         working-directory: frontend
         run: |
           npm ci
@@ -30,33 +39,68 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: "pip"
 
-      - name: Generate Backend SBOM (CycloneDX)
+      - name: Generate Backend SBOM (CycloneDX for requirements.txt)
         run: |
           python -m pip install --upgrade pip
           pip install cyclonedx-bom
           cyclonedx-py requirements backend/requirements.txt -o sbom-backend.json
 
-      # ---------- Upload SBOMs to Dependency-Track ----------
+      # ---------- Upload SBOMs to Dependency-Track (Optional) ----------
+      # NOTE: Localhost won't work from GitHub Actions. Keep it optional.
       - name: Upload Frontend SBOM to Dependency-Track
+        continue-on-error: true
         run: |
+          if [ -z "${{ secrets.DEPENDENCY_TRACK_URL }}" ] || [ -z "${{ secrets.DEPENDENCY_TRACK_API_KEY }}" ] || [ -z "${{ secrets.DT_SECUREGUARD_FRONTEND_UUID }}" ]; then
+            echo "Dependency-Track secrets not set; skipping frontend upload"
+            exit 0
+          fi
+          echo "Uploading frontend SBOM to Dependency-Track..."
           curl -sS -X POST "${{ secrets.DEPENDENCY_TRACK_URL }}/api/v1/bom" \
             -H "X-Api-Key: ${{ secrets.DEPENDENCY_TRACK_API_KEY }}" \
             -F "project=${{ secrets.DT_SECUREGUARD_FRONTEND_UUID }}" \
-            -F "bom=@sbom-frontend.json"
+            -F "bom=@sbom-frontend.json" \
+            -D dt-frontend-headers.txt \
+            -o dt-frontend-response.json \
+            -w "%{http_code}" > dt-frontend-httpcode.txt || true
+          echo "HTTP code: $(cat dt-frontend-httpcode.txt || echo 'none')"
+          echo "Response body:"
+          cat dt-frontend-response.json || true
+          echo "Response headers:"
+          cat dt-frontend-headers.txt || true
 
       - name: Upload Backend SBOM to Dependency-Track
+        continue-on-error: true
         run: |
+          if [ -z "${{ secrets.DEPENDENCY_TRACK_URL }}" ] || [ -z "${{ secrets.DEPENDENCY_TRACK_API_KEY }}" ] || [ -z "${{ secrets.DT_SECUREGUARD_BACKEND_UUID }}" ]; then
+            echo "Dependency-Track secrets not set; skipping backend upload"
+            exit 0
+          fi
+          echo "Uploading backend SBOM to Dependency-Track..."
           curl -sS -X POST "${{ secrets.DEPENDENCY_TRACK_URL }}/api/v1/bom" \
             -H "X-Api-Key: ${{ secrets.DEPENDENCY_TRACK_API_KEY }}" \
             -F "project=${{ secrets.DT_SECUREGUARD_BACKEND_UUID }}" \
-            -F "bom=@sbom-backend.json"
+            -F "bom=@sbom-backend.json" \
+            -D dt-backend-headers.txt \
+            -o dt-backend-response.json \
+            -w "%{http_code}" > dt-backend-httpcode.txt || true
+          echo "HTTP code: $(cat dt-backend-httpcode.txt || echo 'none')"
+          echo "Response body:"
+          cat dt-backend-response.json || true
+          echo "Response headers:"
+          cat dt-backend-headers.txt || true
 
-      # ---------- Artifacts (download SBOMs from GitHub Actions) ----------
+      # ---------- Artifacts (Always) ----------
       - name: Upload SBOM files as artifacts
+        if: always()
         uses: actions/upload-artifact@v4
+        continue-on-error: true
         with:
           name: sboms
+          if-no-files-found: warn
           path: |
             sbom-frontend.json
             sbom-backend.json
+            dt-frontend-response.json
+            dt-backend-response.json
