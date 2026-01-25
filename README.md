@@ -216,12 +216,22 @@ OWASP Dependency-Track provides continuous vulnerability monitoring and SBOM ana
 ```bash
 docker-compose up -d
 ```
+![Dependency-Track Docker](screenshots/dependency-track-docker%20%282%29.png)
+
 - **UI:** http://localhost:8080 (default: `admin` / `admin`)
 - **API:** http://localhost:8081
 
+![Dependency-Track Login](screenshots/dependency-track-login.png)
+
 **Workflow:**
 1. Create projects: **Projects** → **+** (Frontend & Backend)
+
+![Dependency-Track Dashboard](screenshots/dependency-track-dashboard.png)
+
 2. Upload SBOMs: Open project → **Upload BOM** → select `sbom-frontend.json` or `sbom-backend.json`
+
+![Dependency-Track Analyze](screenshots/dependency-track-anayze.png)
+
 3. View findings: **Vulnerabilities**, **Components**, **Portfolio**
 
 **Automated Upload (Optional):**
