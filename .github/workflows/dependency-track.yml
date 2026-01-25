@@ -51,15 +51,19 @@ jobs:
       # NOTE: Localhost won't work from GitHub Actions. Keep it optional.
       - name: Upload Frontend SBOM to Dependency-Track
         continue-on-error: true
+        env:
+          DT_URL: ${{ secrets.DEPENDENCY_TRACK_URL }}
+          DT_API_KEY: ${{ secrets.DEPENDENCY_TRACK_API_KEY }}
+          DT_FRONTEND_UUID: ${{ secrets.DT_SECUREGUARD_FRONTEND_UUID }}
         run: |
-          if [ -z "${{ secrets.DEPENDENCY_TRACK_URL }}" ] || [ -z "${{ secrets.DEPENDENCY_TRACK_API_KEY }}" ] || [ -z "${{ secrets.DT_SECUREGUARD_FRONTEND_UUID }}" ]; then
+          if [ -z "$DT_URL" ] || [ -z "$DT_API_KEY" ] || [ -z "$DT_FRONTEND_UUID" ]; then
             echo "Dependency-Track secrets not set; skipping frontend upload"
             exit 0
           fi
           echo "Uploading frontend SBOM to Dependency-Track..."
-          curl -sS -X POST "${{ secrets.DEPENDENCY_TRACK_URL }}/api/v1/bom" \
-            -H "X-Api-Key: ${{ secrets.DEPENDENCY_TRACK_API_KEY }}" \
-            -F "project=${{ secrets.DT_SECUREGUARD_FRONTEND_UUID }}" \
+          curl -sS -X POST "$DT_URL/api/v1/bom" \
+            -H "X-Api-Key: $DT_API_KEY" \
+            -F "project=$DT_FRONTEND_UUID" \
             -F "bom=@sbom-frontend.json" \
             -D dt-frontend-headers.txt \
             -o dt-frontend-response.json \
@@ -72,15 +76,19 @@ jobs:
 
       - name: Upload Backend SBOM to Dependency-Track
         continue-on-error: true
+        env:
+          DT_URL: ${{ secrets.DEPENDENCY_TRACK_URL }}
+          DT_API_KEY: ${{ secrets.DEPENDENCY_TRACK_API_KEY }}
+          DT_BACKEND_UUID: ${{ secrets.DT_SECUREGUARD_BACKEND_UUID }}
         run: |
-          if [ -z "${{ secrets.DEPENDENCY_TRACK_URL }}" ] || [ -z "${{ secrets.DEPENDENCY_TRACK_API_KEY }}" ] || [ -z "${{ secrets.DT_SECUREGUARD_BACKEND_UUID }}" ]; then
+          if [ -z "$DT_URL" ] || [ -z "$DT_API_KEY" ] || [ -z "$DT_BACKEND_UUID" ]; then
             echo "Dependency-Track secrets not set; skipping backend upload"
             exit 0
           fi
           echo "Uploading backend SBOM to Dependency-Track..."
-          curl -sS -X POST "${{ secrets.DEPENDENCY_TRACK_URL }}/api/v1/bom" \
-            -H "X-Api-Key: ${{ secrets.DEPENDENCY_TRACK_API_KEY }}" \
-            -F "project=${{ secrets.DT_SECUREGUARD_BACKEND_UUID }}" \
+          curl -sS -X POST "$DT_URL/api/v1/bom" \
+            -H "X-Api-Key: $DT_API_KEY" \
+            -F "project=$DT_BACKEND_UUID" \
             -F "bom=@sbom-backend.json" \
             -D dt-backend-headers.txt \
             -o dt-backend-response.json \
