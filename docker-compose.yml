@@ -94,10 +94,10 @@ services:
     #   EXTRA_JAVA_OPTIONS: ""
     environment:
       ALPINE_DATABASE_MODE: "external"
-      ALPINE_DATABASE_URL: "jdbc:postgresql://postgres:5432/dtrack"
+      ALPINE_DATABASE_URL: ${ALPINE_DATABASE_URL:-jdbc:postgresql://postgres:5432/dtrack}
       ALPINE_DATABASE_DRIVER: "org.postgresql.Driver"
-      ALPINE_DATABASE_USERNAME: "dtrack"
-      ALPINE_DATABASE_PASSWORD: "dtrack"
+      ALPINE_DATABASE_USERNAME: ${ALPINE_DATABASE_USERNAME:-dtrack}
+      ALPINE_DATABASE_PASSWORD: ${ALPINE_DATABASE_PASSWORD:-dtrack}
     mem_limit: 4096m
     mem_reservation: 2048m
     dns:
@@ -135,9 +135,9 @@ services:
   postgres:
     image: postgres:17-alpine
     environment:
-      POSTGRES_DB: "dtrack"
-      POSTGRES_USER: "dtrack"
-      POSTGRES_PASSWORD: "dtrack"
+      POSTGRES_DB: ${POSTGRES_DB:-dtrack}
+      POSTGRES_USER: ${POSTGRES_USER:-dtrack}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dtrack}
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
       interval: 5s

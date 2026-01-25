@@ -212,52 +212,85 @@ You can analyze the generated SBOMs using various tools:
 
 This project includes **OWASP Dependency-Track** for continuous vulnerability monitoring and SBOM analysis. Dependency-Track is a Component Analysis platform that allows organizations to identify and reduce risk in the software supply chain.
 
-**Setup Dependency-Track:**
+**Security Note:** Database credentials are now managed via environment variables in `.env` file (not hardcoded). See [Security Best Practices](#-security--database-credentials) below.
 
-1. **Start Dependency-Track** (using the included `docker-compose.yml`):
-   ```bash
-   docker-compose up -d
-   ```
+#### Quick Walkthrough (with screenshots)
 
-2. **Access Dependency-Track**:
-   - **Web UI**: [http://localhost:8080](http://localhost:8080)
-   - **API**: [http://localhost:8081](http://localhost:8081)
-   - **Default Credentials**: 
-     - Username: `admin`
-     - Password: `admin`
-     - ⚠️ **Important**: Change the default password on first login!
+Follow these steps for a simple, visual setup and upload process.
 
-3. **Configuration**:
-   - Memory limit: 4GB (configurable in `docker-compose.yml`)
-   - Ports: Frontend (8080), API (8081)
-   - Database: PostgreSQL (included in docker-compose)
+1) Start Dependency-Track (Docker Compose)
 
-**Uploading SBOMs to Dependency-Track:**
+```bash
+docker-compose up -d
+```
 
-**Recommended Approach: Separate Projects**
+Screenshot: Dependency-Track running via Docker
 
-For better organization and granular vulnerability tracking, create **separate projects** for frontend and backend:
+![Dependency-Track Docker](screenshots/dependency-track-docker%20%282%29.png)
 
-- **Project 1**: "SecureGuard Frontend" → Upload `bom-frontend.xml`
-- **Project 2**: "SecureGuard Backend" → Upload `bom-backend.xml`
+2) Open the UI and log in
 
-**Method 1: Web UI Upload**
+- URL: http://localhost:8080
+- Default: `admin` / `admin` (change immediately)
 
-1. **Create Projects**:
-   - Navigate to **Projects** in the left sidebar
-   - Click **+** (Create Project) button
-   - Create two projects:
-     - Name: `SecureGuard Frontend`, Version: `1.0.0`
-     - Name: `SecureGuard Backend`, Version: `1.0.0`
-   - Click **Save** for each
+Screenshot: Login page
 
-2. **Upload SBOMs**:
-   - Open each project you created
-   - Look for **"Upload BOM"** or **"Import BOM"** button (usually in the project's Components tab or at the top)
-   - Upload `bom-frontend.xml` to the Frontend project
-   - Upload `bom-backend.xml` to the Backend project
+![Dependency-Track Login](screenshots/dependency-track-login.png)
 
-3. **View Results**:
+3) Confirm the server is healthy
+
+- Check the server summary and service health on the home/dashboard page.
+
+Screenshot: Server / status
+
+![Dependency-Track Server](screenshots/dependency-track-server.png)
+
+4) Create two projects (Frontend / Backend)
+
+- Go to **Projects** → **Create Project**
+- Create `SecureGuard Frontend` and `SecureGuard Backend` (set Version to `1.0.0`)
+
+Screenshot: Projects / Dashboard
+
+![Dependency-Track Dashboard](screenshots/dependency-track-dashboard.png)
+
+5) Upload SBOMs via Web UI
+
+- Open a Project → Click **Upload BOM** or **Import BOM** → Choose `sbom-frontend.json` or `bom-frontend.xml` (for frontend) and `sbom-backend.json` or `bom-backend.xml` (for backend)
+- After upload, Dependency-Track will automatically analyze components and surface vulnerabilities.
+
+Screenshot: Upload / Analyze
+
+![Dependency-Track Analyze](screenshots/dependency-track-anayze.png)
+
+6) View Vulnerabilities and Guidance
+
+- Use **Vulnerabilities**, **Components**, and **Portfolio** to investigate findings and remediation steps.
+
+7) Optional: Automated (API) Upload
+
+- Create an API Key: Avatar → Access Management → API Keys → +
+- Export the key locally (PowerShell):
+
+```powershell
+$env:DT_API_KEY = "your-api-key-here"
+```
+
+- Run the helper script:
+
+```bash
+python upload_sbom.py
+```
+
+The script will create projects if they don't exist and upload SBOMs automatically.
+
+**Troubleshooting tips**
+- If uploads fail: check the HTTP response and headers (Actions job now writes `dt-*-httpcode.txt` and `dt-*-headers.txt`).
+- Ports 8080/8081 must be free. Use `docker ps` and `docker logs <container>` to inspect.
+
+
+---
+
    - Use the **Portfolio** view to see all projects together
    - Navigate to **Vulnerabilities** to see security issues
    - Check **Components** to see dependency inventory
@@ -321,6 +354,39 @@ Access reports via:
 - **Projects** → Individual project details
 - **Vulnerabilities** → All vulnerabilities across portfolio
 - **Components** → Component inventory and versions
+
+---
+
+### 🔐 Security & Database Credentials
+
+**Important:** All database credentials (SecureGuard and Dependency-Track) are now configured via environment variables in a `.env` file and **NOT hardcoded** in `docker-compose.yml`.
+
+**For local testing:**
+1. Copy `.env.example` to `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+2. Edit `.env` and change credentials as needed (optional for local dev, **required for production**)
+3. Run `docker-compose up` — Docker will automatically load the `.env` file
+
+**For production deployment:**
+- Use a secrets manager (e.g., AWS Secrets Manager, HashiCorp Vault, GitHub Secrets)
+- Never commit `.env` with real credentials to version control
+- Ensure `.env` is in `.gitignore`
+- Rotate passwords regularly
+
+**Database Credentials in `.env`:**
+```
+# SecureGuard Database
+POSTGRES_USER=secureuser
+POSTGRES_PASSWORD=securepassword
+POSTGRES_DB=secureguard_db
+
+# Dependency-Track Database
+ALPINE_DATABASE_URL=jdbc:postgresql://postgres:5432/dtrack
+ALPINE_DATABASE_USERNAME=dtrack
+ALPINE_DATABASE_PASSWORD=dtrack
+```
 
 ---
 
