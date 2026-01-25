@@ -1,0 +1,79 @@
+#####################################################
+# Dependency-Track SBOM Scanner
+# Optional service for vulnerability scanning SBOMs
+# - API Server: Port 8081
+# - Frontend: Port 8080
+# - PostgreSQL Database for Dependency-Track
+#
+# Run with: docker-compose -f docker-compose.yml -f docker-compose.sbom.yml up -d
+# Or standalone: docker-compose -f docker-compose.sbom.yml up -d
+#####################################################
+
+services:
+  # PostgreSQL Database for Dependency-Track
+  postgres-dtrack:
+    image: postgres:17-alpine
+    container_name: dtrack-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB_DTRACK:-dtrack}
+      POSTGRES_USER: ${POSTGRES_USER_DTRACK:-dtrack}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_DTRACK:-dtrack}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    volumes:
+      - postgres-dtrack-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - dtrack-network
+
+  # Dependency-Track API Server
+  apiserver:
+    image: dependencytrack/apiserver
+    container_name: dtrack-apiserver
+    depends_on:
+      postgres-dtrack:
+        condition: service_healthy
+    environment:
+      ALPINE_DATABASE_MODE: "external"
+      ALPINE_DATABASE_URL: ${ALPINE_DATABASE_URL:-jdbc:postgresql://postgres-dtrack:5432/dtrack}
+      ALPINE_DATABASE_DRIVER: "org.postgresql.Driver"
+      ALPINE_DATABASE_USERNAME: ${ALPINE_DATABASE_USERNAME:-dtrack}
+      ALPINE_DATABASE_PASSWORD: ${ALPINE_DATABASE_PASSWORD:-dtrack}
+    mem_limit: 4096m
+    mem_reservation: 2048m
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    ports:
+      - "8081:8080"
+    volumes:
+      - dtrack-data:/data
+    restart: unless-stopped
+    networks:
+      - dtrack-network
+
+  # Dependency-Track Frontend
+  dtrack-frontend:
+    image: dependencytrack/frontend
+    container_name: dtrack-frontend
+    depends_on:
+      apiserver:
+        condition: service_started
+    environment:
+      API_BASE_URL: "http://localhost:8081"
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    networks:
+      - dtrack-network
+
+networks:
+  dtrack-network:
+    driver: bridge
+
+volumes:
+  postgres-dtrack-data: {}
+  dtrack-data: {}
