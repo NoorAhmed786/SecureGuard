@@ -210,150 +210,26 @@ You can analyze the generated SBOMs using various tools:
 
 #### Dependency-Track Integration
 
-This project includes **OWASP Dependency-Track** for continuous vulnerability monitoring and SBOM analysis. Dependency-Track is a Component Analysis platform that allows organizations to identify and reduce risk in the software supply chain.
+OWASP Dependency-Track provides continuous vulnerability monitoring and SBOM analysis for the software supply chain.
 
-**Security Note:** Database credentials are now managed via environment variables in `.env` file (not hardcoded). See [Security Best Practices](#-security--database-credentials) below.
-
-#### Quick Walkthrough (with screenshots)
-
-Follow these steps for a simple, visual setup and upload process.
-
-1) Start Dependency-Track (Docker Compose)
-
+**Setup:**
 ```bash
 docker-compose up -d
 ```
+- **UI:** http://localhost:8080 (default: `admin` / `admin`)
+- **API:** http://localhost:8081
 
-Screenshot: Dependency-Track running via Docker
+**Workflow:**
+1. Create projects: **Projects** → **+** (Frontend & Backend)
+2. Upload SBOMs: Open project → **Upload BOM** → select `sbom-frontend.json` or `sbom-backend.json`
+3. View findings: **Vulnerabilities**, **Components**, **Portfolio**
 
-![Dependency-Track Docker](screenshots/dependency-track-docker%20%282%29.png)
-
-2) Open the UI and log in
-
-- URL: http://localhost:8080
-- Default: `admin` / `admin` (change immediately)
-
-Screenshot: Login page
-
-![Dependency-Track Login](screenshots/dependency-track-login.png)
-
-3) Confirm the server is healthy
-
-- Check the server summary and service health on the home/dashboard page.
-
-Screenshot: Server / status
-
-![Dependency-Track Server](screenshots/dependency-track-server.png)
-
-4) Create two projects (Frontend / Backend)
-
-- Go to **Projects** → **Create Project**
-- Create `SecureGuard Frontend` and `SecureGuard Backend` (set Version to `1.0.0`)
-
-Screenshot: Projects / Dashboard
-
-![Dependency-Track Dashboard](screenshots/dependency-track-dashboard.png)
-
-5) Upload SBOMs via Web UI
-
-- Open a Project → Click **Upload BOM** or **Import BOM** → Choose `sbom-frontend.json` or `bom-frontend.xml` (for frontend) and `sbom-backend.json` or `bom-backend.xml` (for backend)
-- After upload, Dependency-Track will automatically analyze components and surface vulnerabilities.
-
-Screenshot: Upload / Analyze
-
-![Dependency-Track Analyze](screenshots/dependency-track-anayze.png)
-
-6) View Vulnerabilities and Guidance
-
-- Use **Vulnerabilities**, **Components**, and **Portfolio** to investigate findings and remediation steps.
-
-7) Optional: Automated (API) Upload
-
-- Create an API Key: Avatar → Access Management → API Keys → +
-- Export the key locally (PowerShell):
-
-```powershell
-$env:DT_API_KEY = "your-api-key-here"
-```
-
-- Run the helper script:
-
+**Automated Upload (Optional):**
 ```bash
 python upload_sbom.py
 ```
 
-The script will create projects if they don't exist and upload SBOMs automatically.
-
-**Troubleshooting tips**
-- If uploads fail: check the HTTP response and headers (Actions job now writes `dt-*-httpcode.txt` and `dt-*-headers.txt`).
-- Ports 8080/8081 must be free. Use `docker ps` and `docker logs <container>` to inspect.
-
-
----
-
-   - Use the **Portfolio** view to see all projects together
-   - Navigate to **Vulnerabilities** to see security issues
-   - Check **Components** to see dependency inventory
-
-**Method 2: API Upload (Automated)**
-
-Use the provided Python script for automated upload:
-
-1. **Get API Key**:
-   - Log in to Dependency-Track UI
-   - Click your avatar (top right) → **Access Management** → **API Keys**
-   - Click **+** to create a new API key
-   - Copy the API key
-
-2. **Set Environment Variable**:
-   ```bash
-   # Windows PowerShell
-   $env:DT_API_KEY="your-api-key-here"
-   
-   # Linux/Mac
-   export DT_API_KEY="your-api-key-here"
-   ```
-
-3. **Run Upload Script**:
-   ```bash
-   python upload_sbom.py
-   ```
-
-   The script will:
-   - Create two separate projects (Frontend and Backend)
-   - Upload `bom-frontend.xml` to the Frontend project
-   - Upload `bom-backend.xml` to the Backend project
-   - Display project URLs for easy access
-
-**Available SBOM Files:**
-
-- `bom-frontend.xml` (root) - Frontend dependencies (Node.js/Next.js)
-- `bom-backend.xml` (root) - Backend dependencies (Python/FastAPI)
-- `frontend/bom.xml` - Original frontend SBOM
-- `backend/bom.xml` - Original backend SBOM
-
-**Troubleshooting:**
-
-- **Container not starting**: Ensure Docker Desktop is running
-- **Port conflicts**: Check if ports 8080 or 8081 are already in use
-- **DNS errors**: The docker-compose.yml includes DNS configuration (8.8.8.8, 8.8.4.4)
-- **Memory issues**: Adjust `mem_limit` in `docker-compose.yml` if needed
-- **Health check failures**: Check container logs: `docker logs secureguard-apiserver-1`
-
-**Viewing Vulnerability Reports:**
-
-After uploading SBOMs, Dependency-Track will:
-- Analyze all components for known vulnerabilities
-- Match against NVD (National Vulnerability Database)
-- Provide risk scores and severity ratings
-- Show affected components and recommended fixes
-- Track vulnerability trends over time
-
-Access reports via:
-- **Portfolio** → Overview of all projects
-- **Projects** → Individual project details
-- **Vulnerabilities** → All vulnerabilities across portfolio
-- **Components** → Component inventory and versions
+**Credentials:** Managed via `.env` file. See [Security & Database Credentials](#-security--database-credentials).
 
 ---
 
