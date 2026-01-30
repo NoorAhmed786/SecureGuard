@@ -3311,3 +3311,33 @@ SET SCHEMA PUBLIC
 DELETE FROM WEBSOCKET_CHANNEL WHERE CHANNEL_ID=14
 INSERT INTO WEBSOCKET_CHANNEL VALUES(14,'push.services.mozilla.com',443,'','2026-01-31 01:30:31.126000','2026-01-31 02:00:54.209000',NULL)
 COMMIT
+/*C3*/INSERT INTO HISTORY VALUES(381,1769726583007,1,200,1769807524351,727,'POST','https://ads.mozilla.org/v1/ads','POST https://ads.mozilla.org/v1/ads HTTP/1.1\u000d\u000ahost: ads.mozilla.org\u000d\u000aUser-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0\u000d\u000aAccept: */*\u000d\u000aAccept-Language: en-US,en;q=0.9\u000d\u000acontent-type: application/json\u000d\u000aContent-Length: 223\u000d\u000aConnection: keep-alive\u000d\u000aPriority: u=4\u000d\u000a\u000d\u000a','7b22636f6e746578745f6964223a2235616537326365372d373535332d346439632d623239642d363266353766346466383363222c22706c6163656d656e7473223a5b7b22706c6163656d656e74223a226e65777461625f74696c655f31222c22636f756e74223a317d2c7b22706c6163656d656e74223a226e65777461625f74696c655f32222c22636f756e74223a317d2c7b22706c6163656d656e74223a226e65777461625f74696c655f33222c22636f756e74223a317d5d2c22626c6f636b73223a5b22225d2c2263726564656e7469616c73223a226f6d6974227d','HTTP/1.1 200 OK\u000d\u000acontent-type: application/json\u000d\u000astrict-transport-security: max-age=31536000\u000d\u000adate: Fri, 30 Jan 2026 21:12:04 GMT\u000d\u000aContent-Length: 59\u000d\u000avia: 1.1 google\u000d\u000aAlt-Svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000\u000d\u000a\u000d\u000a','7b226e65777461625f74696c655f31223a5b5d2c226e65777461625f74696c655f32223a5b5d2c226e65777461625f74696c655f33223a5b5d7d0a',NULL,'',TRUE)
+COMMIT
+/*C10*/DELETE FROM PARAM WHERE PARAMID=1 AND SITE='ads.mozilla.org:443' AND TYPE='header' AND NAME='content-type' AND USED=20 AND FLAGS='' AND VALS='application/json'
+INSERT INTO PARAM VALUES(1,'ads.mozilla.org:443','header','content-type',21,'','application/json')
+COMMIT
+DELETE FROM PARAM WHERE PARAMID=2 AND SITE='ads.mozilla.org:443' AND TYPE='header' AND NAME='strict-transport-security' AND USED=20 AND FLAGS='' AND VALS='max-age=31536000'
+INSERT INTO PARAM VALUES(2,'ads.mozilla.org:443','header','strict-transport-security',21,'','max-age=31536000')
+COMMIT
+DELETE FROM PARAM WHERE PARAMID=3 AND SITE='ads.mozilla.org:443' AND TYPE='header' AND NAME='date' AND USED=20 AND FLAGS='' AND VALS='Fri%2C 30 Jan 2026 18:45:58 GMT,Thu%2C 29 Jan 2026 22:44:08 GMT,Fri%2C 30 Jan 2026 00:33:38 GMT,Fri%2C 30 Jan 2026 18:31:02 GMT,Fri%2C 30 Jan 2026 19:39:04 GMT,Fri%2C 30 Jan 2026 19:54:09 GMT,Fri%2C 30 Jan 2026 00:18:37 GMT,Fri%2C 30 Jan 2026 01:18:56 GMT,Fri%2C 30 Jan 2026 19:24:04 GMT,Fri%2C 30 Jan 2026 20:57:03 GMT,Thu%2C 29 Jan 2026 23:28:34 GMT,Fri%2C 30 Jan 2026 01:03:46 GMT,Thu%2C 29 Jan 2026 23:14:13 GMT,Fri%2C 30 Jan 2026 01:34:02 GMT,Fri%2C 30 Jan 2026 00:03:36 GMT,Fri%2C 30 Jan 2026 00:48:39 GMT,Thu%2C 29 Jan 2026 22:59:09 GMT,Thu%2C 29 Jan 2026 23:33:35 GMT,Fri%2C 30 Jan 2026 19:05:58 GMT,Thu%2C 29 Jan 2026 23:48:35 GMT'
+INSERT INTO PARAM VALUES(3,'ads.mozilla.org:443','header','date',21,'','Fri%2C 30 Jan 2026 18:45:58 GMT,Thu%2C 29 Jan 2026 22:44:08 GMT,Fri%2C 30 Jan 2026 00:33:38 GMT,Fri%2C 30 Jan 2026 18:31:02 GMT,Fri%2C 30 Jan 2026 19:39:04 GMT,Fri%2C 30 Jan 2026 21:12:04 GMT,Fri%2C 30 Jan 2026 19:54:09 GMT,Fri%2C 30 Jan 2026 00:18:37 GMT,Fri%2C 30 Jan 2026 01:18:56 GMT,Fri%2C 30 Jan 2026 19:24:04 GMT,Fri%2C 30 Jan 2026 20:57:03 GMT,Thu%2C 29 Jan 2026 23:28:34 GMT,Fri%2C 30 Jan 2026 01:03:46 GMT,Thu%2C 29 Jan 2026 23:14:13 GMT,Fri%2C 30 Jan 2026 01:34:02 GMT,Fri%2C 30 Jan 2026 00:03:36 GMT,Fri%2C 30 Jan 2026 00:48:39 GMT,Thu%2C 29 Jan 2026 22:59:09 GMT,Thu%2C 29 Jan 2026 23:33:35 GMT,Fri%2C 30 Jan 2026 19:05:58 GMT,Thu%2C 29 Jan 2026 23:48:35 GMT')
+COMMIT
+DELETE FROM PARAM WHERE PARAMID=4 AND SITE='ads.mozilla.org:443' AND TYPE='header' AND NAME='Content-Length' AND USED=20 AND FLAGS='' AND VALS='59'
+INSERT INTO PARAM VALUES(4,'ads.mozilla.org:443','header','Content-Length',21,'','59')
+COMMIT
+DELETE FROM PARAM WHERE PARAMID=5 AND SITE='ads.mozilla.org:443' AND TYPE='header' AND NAME='via' AND USED=20 AND FLAGS='' AND VALS='1.1 google'
+INSERT INTO PARAM VALUES(5,'ads.mozilla.org:443','header','via',21,'','1.1 google')
+COMMIT
+DELETE FROM PARAM WHERE PARAMID=6 AND SITE='ads.mozilla.org:443' AND TYPE='header' AND NAME='Alt-Svc' AND USED=20 AND FLAGS='' AND VALS='h3=":443"; ma=2592000%2Ch3-29=":443"; ma=2592000'
+INSERT INTO PARAM VALUES(6,'ads.mozilla.org:443','header','Alt-Svc',21,'','h3=":443"; ma=2592000%2Ch3-29=":443"; ma=2592000')
+COMMIT
+/*C5*/INSERT INTO ALERT VALUES(702,0,10021,'X-Content-Type-Options Header Missing',1,2,'The Anti-MIME-Sniffing header X-Content-Type-Options was not set to ''nosniff''. This allows older versions of Internet Explorer and Chrome to perform MIME-sniffing on the response body, potentially causing the response body to be interpreted and displayed as a content type other than the declared content type. Current (early 2014) and legacy versions of Firefox will use the declared content type (if one is set), rather than performing MIME-sniffing.','https://ads.mozilla.org/v1/ads','x-content-type-options','This issue still applies to error type pages (401, 403, 500, etc.) as those pages are often still affected by injection issues, in which case there is still concern for browsers sniffing pages away from their actual content type.\u000aAt "High" threshold this scan rule will not alert on client or server error responses.','Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to ''nosniff'' for all web pages.\u000aIf possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application/web server to not perform MIME-sniffing.','https://learn.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/compatibility/gg622941(v=vs.85)\u000ahttps://owasp.org/www-community/Security_Headers',381,381,'','',693,15,3,'','10021')
+COMMIT
+/*C6*/INSERT INTO ALERT_TAG VALUES(2115,702,'CWE-693','https://cwe.mitre.org/data/definitions/693.html')
+COMMIT
+INSERT INTO ALERT_TAG VALUES(2116,702,'OWASP_2021_A05','https://owasp.org/Top10/A05_2021-Security_Misconfiguration/')
+COMMIT
+INSERT INTO ALERT_TAG VALUES(2117,702,'OWASP_2017_A06','https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration.html')
+COMMIT
+/*C8*/INSERT INTO TAG VALUES(125,381,'JSON')
+COMMIT
