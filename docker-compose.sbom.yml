@@ -15,9 +15,9 @@ services:
     image: postgres:17-alpine
     container_name: dtrack-postgres
     environment:
-      POSTGRES_DB: ${POSTGRES_DB_DTRACK:-dtrack}
-      POSTGRES_USER: ${POSTGRES_USER_DTRACK:-dtrack}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_DTRACK:-dtrack}
+      POSTGRES_DB: ${POSTGRES_DB_DTRACK}
+      POSTGRES_USER: ${POSTGRES_USER_DTRACK}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_DTRACK}
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
       interval: 5s
@@ -38,10 +38,10 @@ services:
         condition: service_healthy
     environment:
       ALPINE_DATABASE_MODE: "external"
-      ALPINE_DATABASE_URL: ${ALPINE_DATABASE_URL:-jdbc:postgresql://postgres-dtrack:5432/dtrack}
+      ALPINE_DATABASE_URL: ${ALPINE_DATABASE_URL}
       ALPINE_DATABASE_DRIVER: "org.postgresql.Driver"
-      ALPINE_DATABASE_USERNAME: ${ALPINE_DATABASE_USERNAME:-dtrack}
-      ALPINE_DATABASE_PASSWORD: ${ALPINE_DATABASE_PASSWORD:-dtrack}
+      ALPINE_DATABASE_USERNAME: ${ALPINE_DATABASE_USERNAME}
+      ALPINE_DATABASE_PASSWORD: ${ALPINE_DATABASE_PASSWORD}
       JAVA_OPTS: "-Xmx4g -Xms2g"
     mem_limit: 6144m
     mem_reservation: 4096m

@@ -12,10 +12,12 @@ services:
   postgres-secureguard:
     image: postgres:17-alpine
     container_name: secureguard-postgres
+    env_file:
+      - .env
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-secureguard}
-      POSTGRES_USER: ${POSTGRES_USER:-secureguard}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secureguard}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
       interval: 5s
@@ -41,7 +43,7 @@ services:
     env_file:
       - .env
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-secureguard}:${POSTGRES_PASSWORD:-secureguard}@postgres-secureguard:5432/${POSTGRES_DB:-secureguard}
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres-secureguard:5432/${POSTGRES_DB}
       PYTHONUNBUFFERED: 1
       PYTHONDONTWRITEBYTECODE: 1
     ports:
