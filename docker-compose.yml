@@ -38,6 +38,8 @@ services:
     depends_on:
       postgres-secureguard:
         condition: service_healthy
+    env_file:
+      - .env
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-secureguard}:${POSTGRES_PASSWORD:-secureguard}@postgres-secureguard:5432/${POSTGRES_DB:-secureguard}
       PYTHONUNBUFFERED: 1
