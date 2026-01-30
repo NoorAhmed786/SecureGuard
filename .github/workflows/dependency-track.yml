@@ -1,4 +1,4 @@
-name: SBOM Dependency Track
+name: Dependency-Track (Frontend + Backend SBOM)
 
 on:
   push:
