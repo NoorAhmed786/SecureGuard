@@ -303,5 +303,6 @@ SecureGuard follows the **Microsoft SDL** and **STRIDE** methodology.
 
 ---
 
-Licensed under the **MIT License**.
-*Built for Security. Designed for Excellence.* 🛡️
+## ⚖️ License
+This project is developed for **Educational Use & Learning Purposes** only.  
+All intellectual property and code logic are part of a personal academic portfolio.
