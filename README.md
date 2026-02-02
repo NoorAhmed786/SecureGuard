@@ -65,7 +65,13 @@ A comprehensive administrative panel for managing users, API keys, and system se
 ## 🏗️ Architecture & Security
 
 ### High-Level Design
-SecureGuard follows a **Layered Clean Architecture** to ensure scalability and security.
+SecureGuard follows a **Layered Clean Architecture** (Domain-Driven Design principles) to ensure the system is independent, testable, and robust.
+
+#### Why Clean Architecture?
+- **Independence of Frameworks**: core logic (like phishing detection rules) isn't tied to FastAPI or React.
+- **Enhanced Security**: Separation of layers prevents sensitive domain logic from leaking into infrastructure or UI layers.
+- **Fast Testability**: The "Domain" layer can be tested without databases or external APIs.
+- **Future-Proof Scalability**: You can swap databases or AI models in the infrastructure layer without breaking the core application.
 
 For a detailed breakdown of data flows and trust boundaries, see the [Data Flow Diagram (DFD)](threat_model/data_flow_diagram.md).
 
